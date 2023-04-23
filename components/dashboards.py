@@ -20,6 +20,8 @@ card_icon = {
     'margin': 'auto',
 }
 
+graph_margin = dict(l=25, r=25, t=25, b=10)
+
 # =========  Layout  =========== #
 layout = dbc.Col([
     dbc.Row([
@@ -172,3 +174,33 @@ def saldo_total(despesas, receitas):
     valor_saldo = valor_receitas - valor_despesas
 
     return locale.format_string("R$ %.2f", valor_saldo, grouping=True)
+
+# # Gráfico 1
+
+
+@app.callback(
+    Output('graph1', 'figure'),
+    [Input('store-despesas', 'data'),
+     Input('store-receitas', 'data'),
+     Input("dropdown-despesa", "value"),
+     Input("dropdown-receita", "value")])
+def atualiza_grafico1(data_despesa, data_receita, despesa, receita):
+    df_desp = pd.DataFrame(data_despesa).set_index("Data")[["Valor"]]
+    df_rect = pd.DataFrame(data_receita).set_index("Data")[["Valor"]]
+
+    df_rc = df_rect.groupby("Data").sum().rename(columns={"Valor": "Receita"})
+    df_ds = df_desp.groupby("Data").sum().rename(columns={"Valor": "Despesa"})
+
+    df_acum = df_ds.join(df_rc, how='outer').fillna(0)
+    df_acum["Acumulado"] = df_acum["Receita"] - df_acum["Despesa"]
+    df_acum["Acumulado"] = df_acum["Acumulado"].cumsum()
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        name='Fluxo de Caixa', x=df_acum.index, y=df_acum['Acumulado'], mode='lines'))
+
+    fig.update_layout(margin=graph_margin, height=300)
+    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
+                      plot_bgcolor='rgba(0,0,0,0)')
+    return fig
