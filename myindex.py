@@ -6,12 +6,31 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 
-from app import *
-
 from components import sidebar, extratos, dashboards
 
 from globals import *
 
+# Lista contendo links para os estilos utilizados na aplicação
+estilos = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css",
+           "https://fonts.googleapis.com/icon?family=Material+Icons", dbc.themes.COSMO]
+
+# URL do arquivo CSS da biblioteca dash_bootstrap_components
+dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.4/dbc.min.css"
+# FONT_AWESOME = "https://use.fontawesome.com/releases/v5.10.2/css/all.css"
+
+
+# Cria uma instância do objeto Dash, passando o nome da aplicação e a lista de estilos como argumentos
+app = dash.Dash(__name__, external_stylesheets=estilos + [dbc_css])
+
+
+# Define uma configuração para suprimir exceções em caso de callbacks faltantes
+app.config['suppress_callback_exceptions'] = True
+
+# Define uma configuração para servir scripts localmente
+app.scripts.config.serve_locally = True
+
+# Cria uma instância do servidor Flask que será usada pelo Dash
+server = app.server
 
 # DataFrames and Dcc.Store
 df_receitas = pd.read_csv("df_receitas.csv", index_col=0, parse_dates=True)
