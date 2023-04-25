@@ -106,8 +106,8 @@ layout = dbc.Col([
                 dcc.DatePickerRange(
                     month_format='Do MMM, YY',
                     end_date_placeholder_text='Data...',
-                    start_date=datetime.today(),
-                    end_date=datetime.today() + timedelta(days=31),
+                    start_date=datetime.today() - timedelta(days=365),
+                    end_date=datetime.today(),
                     with_portal=True,
                     updatemode='singledate',
                     id='date-picker-config',
@@ -116,17 +116,22 @@ layout = dbc.Col([
             ], style={"height": "100%", "padding": "20px"})
         ], width=4),
 
-        dbc.Col(dbc.Card(dcc.Graph(id="graph1"), style={
+        dbc.Col(dbc.Card(dcc.Graph(id="graph1",
+                                   config={
+                                       "displayModeBar": True,
+                                       "displaylogo": False,
+                                       "modeBarButtonsToRemove": ["pan2d", "lasso2d"]
+                                   }), style={
             "height": "100%", "padding": "10px"}), width=8),
 
     ], style={"margin": "10px"}),
 
     dbc.Row([
-            dbc.Col(dbc.Card(dcc.Graph(id="graph2"),
+            dbc.Col(dbc.Card(dcc.Graph(id="graph2", config={'displayModeBar': False}),
                     style={"padding": "10px"}), width=6),
-            dbc.Col(dbc.Card(dcc.Graph(id="graph3"),
+            dbc.Col(dbc.Card(dcc.Graph(id="graph3", config={'displayModeBar': False}),
                     style={"padding": "10px"}), width=3),
-            dbc.Col(dbc.Card(dcc.Graph(id="graph4"),
+            dbc.Col(dbc.Card(dcc.Graph(id="graph4", config={'displayModeBar': False}),
                     style={"padding": "10px"}), width=3),
             ], style={"margin": "10px"})
 
@@ -183,17 +188,23 @@ def saldo_total(despesas, receitas):
     [Input('store-despesas', 'data'),
      Input('store-receitas', 'data'),
      Input("dropdown-despesa", "value"),
-     Input("dropdown-receita", "value")])
-def atualiza_grafico1(data_despesa, data_receita, despesa, receita):
-    df_desp = pd.DataFrame(data_despesa).set_index("Data")[["Valor"]]
-    df_rect = pd.DataFrame(data_receita).set_index("Data")[["Valor"]]
+     Input("dropdown-receita", "value"),
+     Input('date-picker-config', 'start_date'),
+     Input('date-picker-config', 'end_date')])
+def atualiza_grafico1(data_despesa, data_receita, despesa, receita, start_date, end_date):
+    df_ds = pd.DataFrame(data_despesa).sort_values(by="Data")
+    # verifica quais categorias estão marcadas no dropdown-despesas
+    # df_ds = df_ds[df_ds['Categoria'].isin(despesa)]
+    df_ds = df_ds.groupby("Data").sum(numeric_only=True)
+    df_rc = pd.DataFrame(data_receita).sort_values(by="Data")
+    # verifica quais categorias estão marcadas no dropdown-receitas
+    # df_rc = df_rc[df_rc['Categoria'].isin(receita)]
+    df_rc = df_rc.groupby("Data").sum(numeric_only=True)
 
-    df_rc = df_rect.groupby("Data").sum().rename(columns={"Valor": "Receita"})
-    df_ds = df_desp.groupby("Data").sum().rename(columns={"Valor": "Despesa"})
-
-    df_acum = df_ds.join(df_rc, how='outer').fillna(0)
-    df_acum["Acumulado"] = df_acum["Receita"] - df_acum["Despesa"]
-    df_acum["Acumulado"] = df_acum["Acumulado"].cumsum()
+    df_acum = pd.merge(df_rc[['Valor']], df_ds[['Valor']], on="Data", how="outer", suffixes=(
+        '_receitas', '_despesas')).fillna(0).sort_values(by="Data")
+    df_acum["Saldo"] = df_acum["Valor_receitas"] - df_acum["Valor_despesas"]
+    df_acum["Acumulado"] = df_acum["Saldo"].cumsum()
 
     fig = go.Figure()
 
@@ -203,4 +214,94 @@ def atualiza_grafico1(data_despesa, data_receita, despesa, receita):
     fig.update_layout(margin=graph_margin, height=300)
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)')
+    return fig
+
+# # Gráfico 2 Barras das receitas e despesas por data
+
+
+@app.callback(
+    Output('graph2', 'figure'),
+    [Input('store-receitas', 'data'),
+     Input('store-despesas', 'data'),
+     Input('dropdown-receita', 'value'),
+     Input('dropdown-despesa', 'value'),
+     Input('date-picker-config', 'start_date'),
+     Input('date-picker-config', 'end_date')]
+)
+def atualiza_grafico2(data_receita, data_despesa, receita, despesa, start_date, end_date):
+    df_ds = pd.DataFrame(data_despesa)
+    # verifica quais categorias estão marcadas no dropdown-despesas
+    df_ds = df_ds[df_ds['Categoria'].isin(despesa)]
+    df_ds = df_ds.groupby("Data", as_index=False).sum(numeric_only=True)
+    df_rc = pd.DataFrame(data_receita)
+    # verifica quais categorias estão marcadas no dropdown-receitas
+    df_rc = df_rc[df_rc['Categoria'].isin(receita)]
+    df_rc = df_rc.groupby("Data", as_index=False).sum(numeric_only=True)
+    df_rc['Tipo'] = 'Receitas'
+    df_ds['Tipo'] = 'Despesas'
+
+    # transforma o dataframa de receitas e despesas em uma tabela única unidos verticalmente
+    df_final = pd.concat([df_ds, df_rc], ignore_index=True)
+
+    mask = (df_final['Data'] > start_date) & (df_final['Data'] <= end_date)
+    df_final = df_final.loc[mask]
+
+    fig = px.bar(df_final, x="Data", y="Valor",
+                 color='Tipo', barmode="group")
+
+    fig.update_layout(margin=graph_margin)
+    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
+                      plot_bgcolor='rgba(0,0,0,0)')
+
+    return fig
+
+# # Gráfico 3
+
+
+@app.callback(
+    Output('graph3', "figure"),
+    [Input('store-receitas', 'data'),
+     Input('dropdown-receita', 'value'),
+     Input('date-picker-config', 'start_date'),
+     Input('date-picker-config', 'end_date')]
+)
+def atualiza_grafico_pie_receita(data_receita, receita, start_date, end_date):
+    df = pd.DataFrame(data_receita)
+    df = df[df['Categoria'].isin(receita)]
+
+    mask = (df['Data'] > start_date) & (df['Data'] <= end_date)
+    df = df.loc[mask]
+
+    fig = px.pie(df, values=df['Valor'], names=df["Categoria"], hole=.2)
+    fig.update_layout(title={'text': "Receitas"})
+    fig.update_layout(margin=graph_margin)
+    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
+                      plot_bgcolor='rgba(0,0,0,0)')
+
+    return fig
+
+# # Gráfico 4
+
+
+@app.callback(
+    Output('graph4', "figure"),
+    [Input('store-despesas', 'data'),
+     Input('dropdown-despesa', 'value'),
+     Input('date-picker-config', 'start_date'),
+     Input('date-picker-config', 'end_date')]
+)
+def atualiza_grafico_pie_despesa(data_despesa, despesa,  start_date, end_date):
+    df = pd.DataFrame(data_despesa)
+    df = df[df['Categoria'].isin(despesa)]
+
+    mask = (df['Data'] > start_date) & (df['Data'] <= end_date)
+    df = df.loc[mask]
+
+    fig = px.pie(df, values=df['Valor'], names=df["Categoria"], hole=.2)
+    fig.update_layout(title={'text': "Despesas"})
+
+    fig.update_layout(margin=graph_margin)
+    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
+                      plot_bgcolor='rgba(0,0,0,0)')
+
     return fig
