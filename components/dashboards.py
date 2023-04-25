@@ -9,8 +9,8 @@ import plotly.graph_objects as go
 import calendar
 from globals import *
 from app import app
-import locale
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+# import locale
+# locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 
 card_icon = {
@@ -149,7 +149,7 @@ def manage_dropdown_receitas(data):
     valor_receita_total = df_dropdown_receitas['Valor'].sum()
     dropdown_marks = df_dropdown_receitas['Categoria'].unique().tolist()
 
-    return [([{"label": x, "value": x} for x in df_dropdown_receitas['Categoria'].unique()]), dropdown_marks, locale.format_string("R$ %.2f", valor_receita_total, grouping=True)]
+    return [([{"label": x, "value": x} for x in df_dropdown_receitas['Categoria'].unique()]), dropdown_marks, f"R$ {valor_receita_total:.2f}"]
 
 # # Dropdown Despesa e também card de despesa total
 
@@ -163,7 +163,7 @@ def manage_dropdown_despesas(data):
     valor_despesa_total = df_dropdown_despesas['Valor'].sum()
     dropdown_marks = df_dropdown_despesas['Categoria'].unique().tolist()
 
-    return [([{"label": x, "value": x} for x in df_dropdown_despesas['Categoria'].unique()]), dropdown_marks, locale.format_string("R$ %.2f", valor_despesa_total, grouping=True)]
+    return [([{"label": x, "value": x} for x in df_dropdown_despesas['Categoria'].unique()]), dropdown_marks,  f"R$ {valor_despesa_total:.2f}"]
 
 # Card de valor total subtraindo as despesas das receitas
 
@@ -178,7 +178,7 @@ def saldo_total(despesas, receitas):
 
     valor_saldo = valor_receitas - valor_despesas
 
-    return locale.format_string("R$ %.2f", valor_saldo, grouping=True)
+    return f"R$ {valor_saldo:.2f}"
 
 # # Gráfico 1
 
