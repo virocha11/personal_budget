@@ -1,3 +1,4 @@
+pip==23.1.1
 dash==2.3.1
 dash-bootstrap-components==1.1.0
 dash-bootstrap-templates==1.0.5
