@@ -8,7 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import calendar
 from globals import *
-from myindex import app
+from myindex import *
 # import locale
 # locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
