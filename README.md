@@ -31,8 +31,12 @@ Developed using only **PYTHON** and the following libraries:
 
 - Add authentication and user login
 - Implement integration with bank APIs to automatically collect data
+- List of desires for products
+- Integration with apps to compare prices of products
 - Allow the user to set and track financial goals
 - Provide suggestions for improving financial habits
+- IA to integrate list of products desires and financial habits with personal needs
 - Enable exporting data to other financial management tools
-
+- Integration with coupons apps based on financial habits
+- 
 <p align="center">Copyright © 2023 Vitor Rocha</p>
