@@ -1,7 +1,9 @@
 import pandas as pd
 import os
 
-if ("df_despesas.csv" in os.listdir()) and ("df_receitas.csv" in os.listdir()):
+path_data_files = 'data'
+
+if ("df_despesas.csv" in os.listdir(path_data_files)) and ("df_receitas.csv" in os.listdir(path_data_files)):
     df_despesas = pd.read_csv("df_despesas.csv", index_col=0, parse_dates=True)
     df_receitas = pd.read_csv("df_receitas.csv", index_col=0, parse_dates=True)
     df_receitas["Data"] = pd.to_datetime(df_receitas["Data"])
@@ -23,7 +25,7 @@ else:
     df_receitas.to_csv("df_receitas.csv")
 
 
-if ("df_cat_receita.csv" in os.listdir()) and ("df_cat_despesa.csv" in os.listdir()):
+if ("df_cat_receita.csv" in os.listdir(path_data_files)) and ("df_cat_despesa.csv" in os.listdir(path_data_files)):
     df_cat_receita = pd.read_csv("df_cat_receita.csv", index_col=0)
     df_cat_despesa = pd.read_csv("df_cat_despesa.csv", index_col=0)
     cat_receita = df_cat_receita.values.tolist()
