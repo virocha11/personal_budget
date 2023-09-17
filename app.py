@@ -12,7 +12,8 @@ dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.4
 
 
 # Cria uma instância do objeto Dash, passando o nome da aplicação e a lista de estilos como argumentos
-app = dash.Dash(__name__, external_stylesheets=estilos + [dbc_css])
+app = dash.Dash(__name__, external_stylesheets=estilos +
+                [dbc_css, dbc.icons.FONT_AWESOME])
 
 
 # Define uma configuração para suprimir exceções em caso de callbacks faltantes
