@@ -8,22 +8,26 @@ import plotly.express as px
 
 from app import *
 
-from components import sidebar, extratos, dashboards
+from components import despesas, sidebar, dashboards, receitas
 
 from globals import *
 
 
 # DataFrames and Dcc.Store
-df_receitas = pd.read_csv("df_receitas.csv", index_col=0, parse_dates=True)
+df_receitas = pd.read_csv(os.path.join(
+    path_data_files, data_files['receitas']), index_col=0, parse_dates=True)
 df_receitas_aux = df_receitas.to_dict()
 
-df_despesas = pd.read_csv("df_despesas.csv", index_col=0, parse_dates=True)
+df_despesas = pd.read_csv(os.path.join(
+    path_data_files, data_files['despesas']), index_col=0, parse_dates=True)
 df_despesas_aux = df_despesas.to_dict()
 
-list_receitas = pd.read_csv('df_cat_receita.csv', index_col=0)
+list_receitas = pd.read_csv(os.path.join(
+    path_data_files, data_files['categorias_receitas']), index_col=0)
 list_receitas_aux = list_receitas.to_dict()
 
-list_despesas = pd.read_csv('df_cat_despesa.csv', index_col=0)
+list_despesas = pd.read_csv(os.path.join(
+    path_data_files, data_files['categorias_despesas']), index_col=0)
 list_despesas_aux = list_despesas.to_dict()
 
 
@@ -40,22 +44,24 @@ app.layout = dbc.Container(children=[
 
     dbc.Row([
         dbc.Col([
-            dcc.Location(id='url'),
+            dcc.Location(id='url_index'),
             sidebar.layout
-        ], md=2),
+        ], md=2, className="sticky-sidebar"),
         dbc.Col([
             content
-        ], md=10)
+        ], md=10, className='px-2')
     ])
 ], fluid=True,)
 
 
-@app.callback(Output('page-content', 'children'), [Input('url', 'pathname')])
+@app.callback(Output('page-content', 'children'), [Input('url_index', 'pathname')])
 def render_page(pathname):
     if pathname == '/' or pathname == '/dashboards':
         return dashboards.layout
-    if pathname == '/extratos':
-        return extratos.layout
+    if pathname == '/analisar-despesas':
+        return despesas.layout
+    if pathname == '/analisar-receitas':
+        return receitas.layout
 
 
 if __name__ == '__main__':

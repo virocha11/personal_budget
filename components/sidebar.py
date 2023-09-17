@@ -9,20 +9,15 @@ from dash.dependencies import Input, Output, State
 from dash import html, dcc
 import dash
 import os
-
-
+import base64 as b64
+import io
 # ========= Layout ========= #
 layout = dbc.Col([
-    html.H1("Budget", className="text-primary fw-bolder"),
-    html.P("By Vitor Rocha", className="text-info fs-5"),
-    html.Hr(),
-
-    # seção do perfil (foto, dados etc)
-    dbc.Button(id='botao_avatar',
-               children=[html.Img(src='/assets/vitor_perfil.jpg', id='avatar_foto',
-                                  alt='foto de perfil do usuário', className='perfil_avatar',
-                                  style={'border-radius': '50%'})],
-               style={'background-color': 'transparent', 'border-color': 'transparent'}),
+    html.Div([
+        html.H1("Budget", className="display-5 text-primary fw-bolder mt-3"),
+        html.P("By Vitor Rocha", className="text-muted fs-6"),
+        html.Hr(className="my-3")
+    ], style={"text-align": "center"}),
 
     # seção de lançamento de receita e despesa----------------------------------
     dbc.Row([
@@ -34,8 +29,31 @@ layout = dbc.Col([
             dbc.Button(color='danger', id='new-despesa',
                        children=['- Despesa'])
         ], width=6)
-    ]),
+    ], style={'text-align': 'center'}),
+    # bot]ao de importar csv
+    dbc.Row([
+        dbc.Col([
+            dbc.Button(color='primary', id='import-button',
+                       children=['Importar Extrato'])
+        ], width=12)
+    ], style={'text-align': 'center'}, className='mt-3'),
 
+    dbc.Modal(
+        [
+            dbc.ModalHeader("Importar CSV"),
+            dbc.ModalBody(
+                dcc.Upload(
+                    id='upload-data',
+                    children=html.Button('Selecione o arquivo CSV'),
+                    multiple=False
+                )
+            ),
+            dbc.ModalFooter(
+                dbc.Button("Fechar", id="close-button", className="ml-auto")
+            ),
+        ],
+        id="import-modal",
+    ),
     ### Modal receita ###
     dbc.Modal([
         dbc.ModalHeader(dbc.ModalTitle('Adicionar Receita')),
@@ -251,17 +269,105 @@ layout = dbc.Col([
 
     # seção de navegação--------------------
     html.Hr(),
+    dcc.Location(id='url', refresh=False),
     dbc.Nav([
-        dbc.NavLink("Dashboard", href="/dashboards", active="exact"),
-        dbc.NavLink("Extratos", href="/extratos", active="exact"),
-    ], vertical=True, pills=True, id='nav-buttons', style={'margin-button': '50px'})
+        dbc.NavItem(dbc.NavLink(
+            "Dashboard", href="/dashboards", active="exact", id="dashboard-link")),
+        dbc.NavItem([
+            dbc.NavLink("Extratos", id="extratos-toggle", active="exact")], id="extratos-link"),
+        dbc.Collapse([
+            dbc.NavLink("Analisar Despesas",
+                        href="/analisar-despesas", active="exact", style={"marginLeft": "20px", "fontSize": "0.9em"}, id="despesas-link"),
+            dbc.NavLink("Analisar Receitas",
+                        href="/analisar-receitas", active="exact", style={"marginLeft": "20px", "fontSize": "0.9em"}, id="receitas-link"),
+        ], id="extratos-collapse", is_open=False),
+    ], vertical=True, id='nav-buttons', style={'margin-bottom': '50px'})
 
 ], id='sidebar_inteira')
 
 
 # =========  Callbacks  =========== #
 
+# # Toggle extratos menu collapse com o mouse hover
+@app.callback(
+    Output("extratos-collapse", "is_open"),
+    [Input("extratos-toggle", "n_clicks"),
+     Input('url', 'pathname')],  # Nova entrada
+    [State("extratos-collapse", "is_open")],
+)
+def toggle_collapse(n, pathname, is_open):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        trigger_id = 'No clicks yet'
+    else:
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    if trigger_id == "extratos-toggle":
+        return not is_open
+    elif trigger_id == 'url':
+        if pathname == "/analisar-despesas" or pathname == "/analisar-receitas":
+            return True
+        elif pathname == "/dashboards":
+            return False
+    return is_open
+
+
+# pintar o menu de acordo com a página atual
+
+
+@app.callback(
+    [Output("extratos-toggle", "className"),
+     Output("dashboard-link", "className"),
+     Output("despesas-link", "className"),
+     Output("receitas-link", "className")],
+    [Input('url', 'pathname')]
+)
+def update_class(pathname):
+    extratos_class = ""
+    dashboard_class = ""
+    despesas_class = ""
+    receitas_class = ""
+
+    if pathname == "/dashboards" or pathname == "/":
+        dashboard_class = "active-singlelink"
+    elif pathname == "/analisar-despesas":
+        extratos_class = "active-grouplink"
+        despesas_class = "active-sublink"
+    elif pathname == "/analisar-receitas":
+        extratos_class = "active-grouplink"
+        receitas_class = "active-sublink"
+
+    return extratos_class, dashboard_class, despesas_class, receitas_class
+
+# # Pop-up importar csv
+
+
+@app.callback(
+    Output("import-modal", "is_open"),
+    [Input("import-button", "n_clicks"), Input("close-button", "n_clicks")],
+    [State("import-modal", "is_open")],
+)
+def toggle_modal_import(n1, n2, is_open):
+    if n1 or n2:
+        return not is_open
+    return is_open
+
+
+@app.callback(
+    Output('output-data-upload', 'children'),
+    [Input('upload-data', 'contents')],
+    [State('upload-data', 'filename')]
+)
+def upload_file(contents, filename):
+    if contents is not None:
+        content_type, content_string = contents.split(',')
+        decoded = b64.b64decode(content_string)
+        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        print(df.head())
+
 # Pop-up receita
+
+
 @ app.callback(
     Output('modal-new-receita', 'is_open'),
     Input('new-receita', 'n_clicks'),
@@ -321,7 +427,8 @@ def salve_form_receita(n, descricao, valor, date, switches, categoria, dict_rece
 
         df_receitas.loc[df_receitas.shape[0]] = [
             valor, recebido, fixo, date, categoria, descricao]
-        df_receitas.to_csv("df_receitas.csv")
+        df_receitas.to_csv(os.path.join(
+            path_data_files, data_files['receitas']))
 
     data_return = df_receitas.to_dict()
     return data_return
@@ -357,7 +464,8 @@ def salve_form_despesa(n, descricao, valor, date, switches, categoria, dict_desp
 
         df_despesas.loc[df_despesas.shape[0]] = [
             valor, recebido, fixo, date, categoria, descricao]
-        df_despesas.to_csv("df_despesas.csv")
+        df_despesas.to_csv(os.path.join(
+            path_data_files, data_files['despesas']))
 
     data_return = df_despesas.to_dict()
     return data_return
@@ -413,7 +521,8 @@ def add_category_receita(n, n2, txt, check_delete, data):
 
     opt_receita = [{"label": i, "value": i} for i in cat_receita]
     df_cat_receita = pd.DataFrame(cat_receita, columns=['Categoria'])
-    df_cat_receita.to_csv("df_cat_receita.csv")
+    df_cat_receita.to_csv(os.path.join(
+        path_data_files, data_files['categorias_receitas']))
     data_return = df_cat_receita.to_dict()
 
     return [opt_receita, opt_receita, [], data_return]
@@ -470,7 +579,8 @@ def add_category_despesa(n, n2, txt, check_delete, data):
 
     opt_despesa = [{"label": i, "value": i} for i in cat_despesa]
     df_cat_despesa = pd.DataFrame(cat_despesa, columns=['Categoria'])
-    df_cat_despesa.to_csv("df_cat_despesa.csv")
+    df_cat_despesa.to_csv(os.path.join(
+        path_data_files, data_files['categorias_despesas']))
     data_return = df_cat_despesa.to_dict()
 
     return [opt_despesa, opt_despesa, [], data_return]
