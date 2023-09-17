@@ -10,17 +10,18 @@ import calendar
 from globals import *
 from app import app
 import locale
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+# locale.setlocale(locale.LC_ALL, 'pt_PT.UTF-8')
 
 card_icon = {
     'color': 'white',
-    'text-align': 'center',
+    'textAlign': 'center',
     'font-size': 30,
     'margin': 'auto',
 }
 
-graph_margin = dict(l=25, r=25, t=25, b=10)
+graph_margin = dict(l=10, r=10, t=25, b=0, pad=2)
 
 # =========  Layout  =========== #
 layout = dbc.Col([
@@ -29,14 +30,16 @@ layout = dbc.Col([
         dbc.Col([
             dbc.CardGroup([
                 dbc.Card([
-                    html.Legend('Saldo'),
-                    html.H5('R$ 9.300,00', id='value-saldo-dashboards', style={})
+                    html.Legend('Saldo',
+                                style={'font-size': '1.3rem', 'color': 'black'}),
+                    html.H5('R$ 9.300,00', id='value-saldo-dashboards',
+                            style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
                 dbc.Card(
                     html.Div(className='fa fa-balance-scale', style=card_icon),
                     color='warning',
-                    style={'max-width': 75, 'height': 100},
+                    style={'max-width': 75, 'height': 90},
                 )
             ])
         ], width=4),
@@ -44,15 +47,16 @@ layout = dbc.Col([
         dbc.Col([
             dbc.CardGroup([
                 dbc.Card([
-                    html.Legend('Receitas'),
+                    html.Legend('Receitas',
+                                style={'font-size': '1.3rem', 'color': 'black'}),
                     html.H5('R$ 15.000,00',
-                            id='value-receita-dashboards', style={})
+                            id='value-receita-dashboards', style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
                 dbc.Card(
                     html.Div(className='fa fa-smile-o', style=card_icon),
                     color='success',
-                    style={'max-width': 75, 'height': 100},
+                    style={'max-width': 75, 'height': 90},
                 )
             ])
         ], width=4),
@@ -60,15 +64,16 @@ layout = dbc.Col([
         dbc.Col([
             dbc.CardGroup([
                 dbc.Card([
-                    html.Legend('Despesas'),
+                    html.Legend('Despesas',
+                                style={'font-size': '1.3rem', 'color': 'black'}),
                     html.H5('R$ 5.700,00',
-                            id='value-despesas-dashboards', style={})
+                            id='value-despesas-dashboards', style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
                 dbc.Card(
                     html.Div(className='fa fa-meh-o', style=card_icon),
                     color='danger',
-                    style={'max-width': 75, 'height': 100},
+                    style={'max-width': 75, 'height': 90},
                 )
             ])
         ], width=4)
@@ -104,14 +109,12 @@ layout = dbc.Col([
                 html.Legend("Período de Análise", style={
                     "margin-top": "10px"}),
                 dcc.DatePickerRange(
-                    month_format='Do MMM, YY',
+                    month_format='DD/MM/YYYY',  # como formato para dia mes ano em portugues = 'DD
                     end_date_placeholder_text='Data...',
                     start_date=datetime.today() - timedelta(days=365),
                     end_date=datetime.today(),
-                    with_portal=True,
                     updatemode='singledate',
-                    id='date-picker-config',
-                    style={'z-index': '100'})
+                    id='date-picker-config')
 
             ], style={"height": "100%", "padding": "20px"})
         ], width=4),
@@ -180,9 +183,8 @@ def saldo_total(despesas, receitas):
 
     return locale.format_string("R$ %.2f", valor_saldo, grouping=True)
 
-# # Gráfico 1
 
-
+# Gráfico 1
 @app.callback(
     Output('graph1', 'figure'),
     [Input('store-despesas', 'data'),
@@ -206,14 +208,38 @@ def atualiza_grafico1(data_despesa, data_receita, despesa, receita, start_date, 
     df_acum["Saldo"] = df_acum["Valor_receitas"] - df_acum["Valor_despesas"]
     df_acum["Acumulado"] = df_acum["Saldo"].cumsum()
 
+    date_filter = (df_acum.index > start_date) & (df_acum.index <= end_date)
+    df_acum = df_acum.loc[date_filter]
+
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
-        name='Fluxo de Caixa', x=df_acum.index, y=df_acum['Acumulado'], mode='lines'))
+        name='Fluxo de Caixa',
+        x=df_acum.index,
+        y=df_acum['Acumulado'],
+        mode='lines',
+        line=dict(color='rgb(0, 0, 255)', width=2,
+                  smoothing=0.3, shape='spline'),
+        fill='tozeroy',
+        fillcolor='rgba(0, 0, 255, 0.1)',
+        hovertemplate='%{y:$,.2f}',
+    ))
 
-    fig.update_layout(margin=graph_margin, height=300)
-    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-                      plot_bgcolor='rgba(0,0,0,0)')
+    fig.update_layout(
+        margin=graph_margin,
+        height=300,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        yaxis=dict(
+            tickformat="$,.2f"
+        ),
+        xaxis=dict(
+            tickmode='auto',
+            nticks=len(df_acum.index),
+            tickformat='%b %Y'
+        )
+    )
+
     return fig
 
 # # Gráfico 2 Barras das receitas e despesas por data
@@ -243,13 +269,15 @@ def atualiza_grafico2(data_receita, data_despesa, receita, despesa, start_date, 
     # transforma o dataframa de receitas e despesas em uma tabela única unidos verticalmente
     df_final = pd.concat([df_ds, df_rc], ignore_index=True)
 
-    mask = (df_final['Data'] > start_date) & (df_final['Data'] <= end_date)
-    df_final = df_final.loc[mask]
+    date_filter = (df_final['Data'] > start_date) & (
+        df_final['Data'] <= end_date)
+    df_final = df_final.loc[date_filter]
 
     fig = px.bar(df_final, x="Data", y="Valor",
-                 color='Tipo', barmode="group")
+                 color='Tipo', barmode="group",
+                 )
 
-    fig.update_layout(margin=graph_margin)
+    fig.update_layout(margin=graph_margin, height=300)
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)')
 
@@ -272,9 +300,12 @@ def atualiza_grafico_pie_receita(data_receita, receita, start_date, end_date):
     mask = (df['Data'] > start_date) & (df['Data'] <= end_date)
     df = df.loc[mask]
 
-    fig = px.pie(df, values=df['Valor'], names=df["Categoria"], hole=.2)
+    fig = px.pie(df, values=df['Valor'], names=df["Categoria"],
+                 hole=.2)
+    fig.update_traces(textposition='inside',
+                      textinfo='percent+label', showlegend=False)
     fig.update_layout(title={'text': "Receitas"})
-    fig.update_layout(margin=graph_margin)
+    fig.update_layout(margin=graph_margin, height=300)
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)')
 
@@ -299,8 +330,9 @@ def atualiza_grafico_pie_despesa(data_despesa, despesa,  start_date, end_date):
 
     fig = px.pie(df, values=df['Valor'], names=df["Categoria"], hole=.2)
     fig.update_layout(title={'text': "Despesas"})
-
-    fig.update_layout(margin=graph_margin)
+    fig.update_traces(textposition='inside',
+                      textinfo='percent+label', showlegend=False)
+    fig.update_layout(margin=graph_margin, height=300)
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)')
 
