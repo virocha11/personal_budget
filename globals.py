@@ -14,16 +14,16 @@ if (data_files['despesas'] in os.listdir(path_data_files)) and (data_files['rece
         path_data_files, data_files['despesas']), index_col=0, parse_dates=True)
     df_receitas = pd.read_csv(os.path.join(
         path_data_files, data_files['receitas']), index_col=0, parse_dates=True)
-    df_receitas["Data"] = pd.to_datetime(df_receitas["Data"])
-    df_receitas["Data"] = df_receitas["Data"].apply(lambda x: x.date())
-    df_despesas["Data"] = pd.to_datetime(df_despesas["Data"])
-    df_despesas["Data"] = df_despesas["Data"].apply(lambda x: x.date())
+    df_receitas["Date"] = pd.to_datetime(df_receitas["Date"])
+    df_receitas["Date"] = df_receitas["Date"].apply(lambda x: x.date())
+    df_despesas["Date"] = pd.to_datetime(df_despesas["Date"])
+    df_despesas["Date"] = df_despesas["Date"].apply(lambda x: x.date())
 
 else:
     data_structure = {'Valor': [],
                       'Efetuado': [],
                       'Fixo': [],
-                      'Data': [],
+                      'Date': [],
                       'Categoria': [],
                       'Descrição': [], }
 

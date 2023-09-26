@@ -1,8 +1,14 @@
-,Valor,Efetuado,Fixo,Data,Categoria,Descrição
-0,100.0,1,0,2023-04-22,Gasolina,Gasolina
-1,59.9,1,0,2023-04-27,Alimentação,Teste
-2,800.0,1,0,2023-04-05,Gasolina,Gasolina
-3,1000.0,1,0,2023-03-25,Alimentação,Mercado
-4,150.0,1,0,2023-04-23,Alimentação,Mercado
-5,150.0,1,0,2023-04-04,Saúde,Mercado
-6,150.0,1,0,2023-04-04,Saúde,Mercado
+Unnamed: 0,Value,Completed,Fixed,Date,Category,Description
+0,100.0,1,0,2023-04-22,Fuel,
+1,59.9,1,0,2023-04-27,Food,
+2,800.0,1,0,2023-04-05,Fuel,
+3,1000.0,1,0,2023-03-25,Food,
+4,150.0,1,0,2023-04-23,Food,
+5,150.0,1,0,2023-04-04,Health,
+6,150.0,1,0,2023-04-04,Health,
+7,15.5,1,0,2023-04-24,Entertainment,Netflix
+8,5.0,1,0,2023-04-10,Entertainment,FIlme
+9,60.0,1,0,2023-03-10,Entertainment,Park
+10,60.0,1,0,2023-03-10,Entertainment,Park
+11,80.0,1,0,2023-03-15,Transportation,Bus ticket
+12,80.0,1,0,2023-03-15,Transportation,Bus ticket

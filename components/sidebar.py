@@ -23,18 +23,18 @@ layout = dbc.Col([
     dbc.Row([
         dbc.Col([
             dbc.Button(color='success', id='new-receita',
-                       children=['+ Receita'])
+                       children=['+ Revenue'])
         ], width=6),
         dbc.Col([
             dbc.Button(color='danger', id='new-despesa',
-                       children=['- Despesa'])
+                       children=['- Expense'])
         ], width=6)
     ], style={'text-align': 'center'}),
     # bot]ao de importar csv
     dbc.Row([
         dbc.Col([
             dbc.Button(color='primary', id='import-button',
-                       children=['Importar Extrato'])
+                       children=['Import bank statement'])
         ], width=12)
     ], style={'text-align': 'center'}, className='mt-3'),
 
@@ -274,11 +274,11 @@ layout = dbc.Col([
         dbc.NavItem(dbc.NavLink(
             "Dashboard", href="/dashboards", active="exact", id="dashboard-link")),
         dbc.NavItem([
-            dbc.NavLink("Extratos", id="extratos-toggle", active="exact")], id="extratos-link"),
+            dbc.NavLink("Statements", id="extratos-toggle", active="exact")], id="extratos-link"),
         dbc.Collapse([
-            dbc.NavLink("Analisar Despesas",
+            dbc.NavLink("Expenses Analysis",
                         href="/analisar-despesas", active="exact", style={"marginLeft": "20px", "fontSize": "0.9em"}, id="despesas-link"),
-            dbc.NavLink("Analisar Receitas",
+            dbc.NavLink("Revenue Analysis",
                         href="/analisar-receitas", active="exact", style={"marginLeft": "20px", "fontSize": "0.9em"}, id="receitas-link"),
         ], id="extratos-collapse", is_open=False),
     ], vertical=True, id='nav-buttons', style={'margin-bottom': '50px'})

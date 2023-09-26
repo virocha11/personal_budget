@@ -30,9 +30,9 @@ layout = dbc.Col([
         dbc.Col([
             dbc.CardGroup([
                 dbc.Card([
-                    html.Legend('Saldo',
+                    html.Legend('Balance',
                                 style={'font-size': '1.3rem', 'color': 'black'}),
-                    html.H5('R$ 9.300,00', id='value-saldo-dashboards',
+                    html.H5('$ 9.300,00', id='value-saldo-dashboards',
                             style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
@@ -47,9 +47,9 @@ layout = dbc.Col([
         dbc.Col([
             dbc.CardGroup([
                 dbc.Card([
-                    html.Legend('Receitas',
+                    html.Legend('Revenue',
                                 style={'font-size': '1.3rem', 'color': 'black'}),
-                    html.H5('R$ 15.000,00',
+                    html.H5('$ 15.000,00',
                             id='value-receita-dashboards', style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
@@ -64,9 +64,9 @@ layout = dbc.Col([
         dbc.Col([
             dbc.CardGroup([
                 dbc.Card([
-                    html.Legend('Despesas',
+                    html.Legend('Expenses',
                                 style={'font-size': '1.3rem', 'color': 'black'}),
-                    html.H5('R$ 5.700,00',
+                    html.H5('$ 5.700,00',
                             id='value-despesas-dashboards', style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
@@ -83,9 +83,9 @@ layout = dbc.Col([
         dbc.Col([
             dbc.Card([
 
-                html.Legend("Filtrar lançamentos", className="card-title"),
+                html.Legend("Filter Categories", className="card-title"),
 
-                html.Label("Categorias das receitas"),
+                html.Label("Categorys das revenues"),
                 html.Div(
                     dcc.Dropdown(
                         id="dropdown-receita",
@@ -96,7 +96,7 @@ layout = dbc.Col([
                         multi=True)
                 ),
 
-                html.Label("Categorias das despesas",
+                html.Label("Categorys das expenses",
                            style={"margin-top": "10px"}),
                 dcc.Dropdown(
                     id="dropdown-despesa",
@@ -106,16 +106,15 @@ layout = dbc.Col([
                     persistence_type="session",
                     multi=True
                 ),
-                html.Legend("Período de Análise", style={
+                html.Legend("Analysis Period", style={
                     "margin-top": "10px"}),
                 dcc.DatePickerRange(
                     month_format='DD/MM/YYYY',  # como formato para dia mes ano em portugues = 'DD
-                    end_date_placeholder_text='Data...',
+                    end_date_placeholder_text='Date...',
                     start_date=datetime.today() - timedelta(days=365),
                     end_date=datetime.today(),
                     updatemode='singledate',
                     id='date-picker-config')
-
             ], style={"height": "100%", "padding": "20px"})
         ], width=4),
 
@@ -134,7 +133,7 @@ layout = dbc.Col([
                     style={"padding": "10px"}), width=6),
             dbc.Col(dbc.Card(dcc.Graph(id="graph3", config={'displayModeBar': False}),
                     style={"padding": "10px"}), width=3),
-            dbc.Col(dbc.Card(dcc.Graph(id="graph4", config={'displayModeBar': False}),
+            dbc.Col(dbc.Card(dcc.Graph(id="graph4", ),
                     style={"padding": "10px"}), width=3),
             ], style={"margin": "10px"})
 
@@ -149,10 +148,10 @@ layout = dbc.Col([
               Input("store-receitas", "data"))
 def manage_dropdown_receitas(data):
     df_dropdown_receitas = pd.DataFrame(data)
-    valor_receita_total = df_dropdown_receitas['Valor'].sum()
-    dropdown_marks = df_dropdown_receitas['Categoria'].unique().tolist()
+    valor_receita_total = df_dropdown_receitas['Value'].sum()
+    dropdown_marks = df_dropdown_receitas['Category'].unique().tolist()
 
-    return [([{"label": x, "value": x} for x in df_dropdown_receitas['Categoria'].unique()]), dropdown_marks, locale.format_string("R$ %.2f", valor_receita_total, grouping=True)]
+    return [([{"label": x, "value": x} for x in df_dropdown_receitas['Category'].unique()]), dropdown_marks, locale.format_string("$ %.2f", valor_receita_total, grouping=True)]
 
 # # Dropdown Despesa e também card de despesa total
 
@@ -163,10 +162,10 @@ def manage_dropdown_receitas(data):
               Input("store-despesas", "data"))
 def manage_dropdown_despesas(data):
     df_dropdown_despesas = pd.DataFrame(data)
-    valor_despesa_total = df_dropdown_despesas['Valor'].sum()
-    dropdown_marks = df_dropdown_despesas['Categoria'].unique().tolist()
+    valor_despesa_total = df_dropdown_despesas['Value'].sum()
+    dropdown_marks = df_dropdown_despesas['Category'].unique().tolist()
 
-    return [([{"label": x, "value": x} for x in df_dropdown_despesas['Categoria'].unique()]), dropdown_marks, locale.format_string("R$ %.2f", valor_despesa_total, grouping=True)]
+    return [([{"label": x, "value": x} for x in df_dropdown_despesas['Category'].unique()]), dropdown_marks, locale.format_string("$ %.2f", valor_despesa_total, grouping=True)]
 
 # Card de valor total subtraindo as despesas das receitas
 
@@ -176,12 +175,12 @@ def manage_dropdown_despesas(data):
     [Input("store-despesas", "data"),
      Input("store-receitas", "data")])
 def saldo_total(despesas, receitas):
-    valor_despesas = pd.DataFrame(despesas)['Valor'].sum()
-    valor_receitas = pd.DataFrame(receitas)['Valor'].sum()
+    valor_despesas = pd.DataFrame(despesas)['Value'].sum()
+    valor_receitas = pd.DataFrame(receitas)['Value'].sum()
 
     valor_saldo = valor_receitas - valor_despesas
 
-    return locale.format_string("R$ %.2f", valor_saldo, grouping=True)
+    return locale.format_string("$ %.2f", valor_saldo, grouping=True)
 
 
 # Gráfico 1
@@ -194,27 +193,30 @@ def saldo_total(despesas, receitas):
      Input('date-picker-config', 'start_date'),
      Input('date-picker-config', 'end_date')])
 def atualiza_grafico1(data_despesa, data_receita, despesa, receita, start_date, end_date):
-    df_ds = pd.DataFrame(data_despesa).sort_values(by="Data")
+    
+    ## calculate cash flow and acumulated in df_acum
+    df_ds = pd.DataFrame(data_despesa).sort_values(by="Date")
     # verifica quais categorias estão marcadas no dropdown-despesas
-    # df_ds = df_ds[df_ds['Categoria'].isin(despesa)]
-    df_ds = df_ds.groupby("Data").sum(numeric_only=True)
-    df_rc = pd.DataFrame(data_receita).sort_values(by="Data")
+    # df_ds = df_ds[df_ds['Category'].isin(despesa)]
+    df_ds = df_ds.groupby("Date").sum(numeric_only=True)
+    df_rc = pd.DataFrame(data_receita).sort_values(by="Date")
     # verifica quais categorias estão marcadas no dropdown-receitas
-    # df_rc = df_rc[df_rc['Categoria'].isin(receita)]
-    df_rc = df_rc.groupby("Data").sum(numeric_only=True)
+    # df_rc = df_rc[df_rc['Category'].isin(receita)]
+    df_rc = df_rc.groupby("Date").sum(numeric_only=True)
 
-    df_acum = pd.merge(df_rc[['Valor']], df_ds[['Valor']], on="Data", how="outer", suffixes=(
-        '_receitas', '_despesas')).fillna(0).sort_values(by="Data")
-    df_acum["Saldo"] = df_acum["Valor_receitas"] - df_acum["Valor_despesas"]
+    df_acum = pd.merge(df_rc[['Value']], df_ds[['Value']], on="Date", how="outer", suffixes=(
+        '_receitas', '_despesas')).fillna(0).sort_values(by="Date")
+    df_acum["Saldo"] = df_acum["Value_receitas"] - df_acum["Value_despesas"]
     df_acum["Acumulado"] = df_acum["Saldo"].cumsum()
 
     date_filter = (df_acum.index > start_date) & (df_acum.index <= end_date)
     df_acum = df_acum.loc[date_filter]
 
+    
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
-        name='Fluxo de Caixa',
+        name='Cash Flow',
         x=df_acum.index,
         y=df_acum['Acumulado'],
         mode='lines',
@@ -257,24 +259,24 @@ def atualiza_grafico1(data_despesa, data_receita, despesa, receita, start_date, 
 def atualiza_grafico2(data_receita, data_despesa, receita, despesa, start_date, end_date):
     df_ds = pd.DataFrame(data_despesa)
     # verifica quais categorias estão marcadas no dropdown-despesas
-    df_ds = df_ds[df_ds['Categoria'].isin(despesa)]
-    df_ds = df_ds.groupby("Data", as_index=False).sum(numeric_only=True)
+    df_ds = df_ds[df_ds['Category'].isin(despesa)]
+    df_ds = df_ds.groupby("Date", as_index=False).sum(numeric_only=True)
     df_rc = pd.DataFrame(data_receita)
     # verifica quais categorias estão marcadas no dropdown-receitas
-    df_rc = df_rc[df_rc['Categoria'].isin(receita)]
-    df_rc = df_rc.groupby("Data", as_index=False).sum(numeric_only=True)
-    df_rc['Tipo'] = 'Receitas'
-    df_ds['Tipo'] = 'Despesas'
+    df_rc = df_rc[df_rc['Category'].isin(receita)]
+    df_rc = df_rc.groupby("Date", as_index=False).sum(numeric_only=True)
+    df_rc['Type'] = 'Expenses'
+    df_ds['Type'] = 'Revenue'
 
     # transforma o dataframa de receitas e despesas em uma tabela única unidos verticalmente
     df_final = pd.concat([df_ds, df_rc], ignore_index=True)
 
-    date_filter = (df_final['Data'] > start_date) & (
-        df_final['Data'] <= end_date)
+    date_filter = (df_final['Date'] > start_date) & (
+        df_final['Date'] <= end_date)
     df_final = df_final.loc[date_filter]
 
-    fig = px.bar(df_final, x="Data", y="Valor",
-                 color='Tipo', barmode="group",
+    fig = px.bar(df_final, x="Date", y="Value",
+                 color='Type', barmode="group",
                  )
 
     fig.update_layout(margin=graph_margin, height=300)
@@ -295,16 +297,16 @@ def atualiza_grafico2(data_receita, data_despesa, receita, despesa, start_date, 
 )
 def atualiza_grafico_pie_receita(data_receita, receita, start_date, end_date):
     df = pd.DataFrame(data_receita)
-    df = df[df['Categoria'].isin(receita)]
+    df = df[df['Category'].isin(receita)]
 
-    mask = (df['Data'] > start_date) & (df['Data'] <= end_date)
+    mask = (df['Date'] > start_date) & (df['Date'] <= end_date)
     df = df.loc[mask]
 
-    fig = px.pie(df, values=df['Valor'], names=df["Categoria"],
+    fig = px.pie(df, values=df['Value'], names=df["Category"],
                  hole=.2)
     fig.update_traces(textposition='inside',
                       textinfo='percent+label', showlegend=False)
-    fig.update_layout(title={'text': "Receitas"})
+    fig.update_layout(title={'text': "Revenue"})
     fig.update_layout(margin=graph_margin, height=300)
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)')
@@ -323,13 +325,13 @@ def atualiza_grafico_pie_receita(data_receita, receita, start_date, end_date):
 )
 def atualiza_grafico_pie_despesa(data_despesa, despesa,  start_date, end_date):
     df = pd.DataFrame(data_despesa)
-    df = df[df['Categoria'].isin(despesa)]
+    df = df[df['Category'].isin(despesa)]
 
-    mask = (df['Data'] > start_date) & (df['Data'] <= end_date)
+    mask = (df['Date'] > start_date) & (df['Date'] <= end_date)
     df = df.loc[mask]
 
-    fig = px.pie(df, values=df['Valor'], names=df["Categoria"], hole=.2)
-    fig.update_layout(title={'text': "Despesas"})
+    fig = px.pie(df, values=df['Value'], names=df["Category"], hole=.2)
+    fig.update_layout(title={'text': "Expenses"})
     fig.update_traces(textposition='inside',
                       textinfo='percent+label', showlegend=False)
     fig.update_layout(margin=graph_margin, height=300)

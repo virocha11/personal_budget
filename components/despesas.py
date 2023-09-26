@@ -12,7 +12,7 @@ from app import app
 # =========  Layout  =========== #
 layout = dbc.Col([
     dbc.Row([
-        html.Legend("Tabela de despesas"),
+        html.Legend("Expenses Table"),
         html.Div(id="tabela-despesas"),
     ]),
 
@@ -25,8 +25,8 @@ layout = dbc.Col([
         dbc.Col([
             dbc.Card(
                 dbc.CardBody([
-                    html.H4("Despesas"),
-                    html.Legend("R$ -", id="valor_despesa_card",
+                    html.H4("Total Expense"),
+                    html.Legend("$ -", id="valor_despesa_card",
                                 style={'font-size': '3rem'}),
                     html.H6("Total de despesas"),
                 ], style={'text-align': 'center', 'padding-top': '30px'}))
@@ -45,32 +45,32 @@ layout = dbc.Col([
 )
 def imprimir_tabela(data):
     df = pd.DataFrame(data)
-    df['Data'] = pd.to_datetime(df['Data']).dt.date
+    df['Date'] = pd.to_datetime(df['Date']).dt.date
 
-    df.loc[df['Efetuado'] == 0, 'Efetuado'] = 'Não'
-    df.loc[df['Efetuado'] == 1, 'Efetuado'] = 'Sim'
+    df.loc[df['Completed'] == 0, 'Completed'] = 'Não'
+    df.loc[df['Completed'] == 1, 'Completed'] = 'Sim'
 
-    df.loc[df['Fixo'] == 0, 'Fixo'] = 'Não'
-    df.loc[df['Fixo'] == 1, 'Fixo'] = 'Sim'
+    df.loc[df['Fixed'] == 0, 'Fixed'] = 'Não'
+    df.loc[df['Fixed'] == 1, 'Fixed'] = 'Sim'
 
     df = df.fillna('-')
 
-    df.sort_values(by='Data', ascending=False)
+    df.sort_values(by='Date', ascending=False)
     # coloca a coluna descrição na primeira posição
     cols = df.columns.tolist()
-    cols = cols[-1:] + cols[:-1]
+    # cols = cols[-1:] + cols[:-1]
     df = df[cols]
 
     tabela = dash_table.DataTable(
-        id='datatable-interactivity',
+        id='datatable-despesa-interactivity',
         columns=[
             {"name": i, "id": i, "deletable": False,
                 "selectable": False, "hideable": True}
-            if i == "Descrição" or i == "Fixo" or i == "Efetuado"
+            if i == "Descrição" or i == "Fixed" or i == "Completed"
             else {
                 "name": i, "id": i, "deletable": False, "selectable": False,
                 "type": "numeric", "format": FormatTemplate.money(2)
-            } if i == "Valor"
+            } if i == "Value"
             else {"name": i, "id": i, "deletable": False, "selectable": False}
             for i in df.columns
         ],
@@ -97,14 +97,14 @@ def imprimir_tabela(data):
                 'backgroundColor': 'rgb(248, 248, 248)'
             },
             {
-                'if': {'column_id': 'Efetuado',
-                       'filter_query': '{Efetuado} eq "Não"'},
+                'if': {'column_id': 'Completed',
+                       'filter_query': '{Completed} eq "Não"'},
                 'backgroundColor': 'tomato',
                 'color': 'white'
             },
             {
-                'if': {'column_id': 'Efetuado',
-                       'filter_query': '{Efetuado} eq "Sim"'},
+                'if': {'column_id': 'Completed',
+                       'filter_query': '{Completed} eq "Sim"'},
                 'color': 'limegreen'
             }
         ],
@@ -128,21 +128,21 @@ def imprimir_tabela(data):
 )
 def bar_chart(data):
     df = pd.DataFrame(data)
-    df_grouped = df.groupby("Categoria").sum()[["Valor"]].reset_index()
-    graph = px.bar(df_grouped, x='Categoria', y='Valor', title="Despesas Gerais",
-                   color='Categoria',  # Adiciona cores
+    df_grouped = df.groupby("Category").sum()[["Value"]].reset_index()
+    graph = px.bar(df_grouped, x='Category', y='Value', title="General Expenses",
+                   color='Category',  # Adiciona cores
                    # Rótulos dos eixos
-                   labels={'Valor': 'Valor (R$)', 'Categoria': 'Categoria'},
+                   labels={'Value': 'Value ($)', 'Category': 'Category'},
                    )
 
     # Atualiza o layout
     graph.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        xaxis_title="Categoria",
-        yaxis_title="Valor (R$)",
+        xaxis_title="Category",
+        yaxis_title="Value ($)",
         yaxis=dict(
-            tickprefix="R$ ",  # Prefixo para o eixo Y
+            tickprefix="$ ",  # PreFixed para o eixo Y
             title_font=dict(
                 size=16,
                 color='black',
@@ -168,6 +168,6 @@ def bar_chart(data):
 )
 def display_desp(data):
     df = pd.DataFrame(data)
-    valor = df['Valor'].sum()
+    valor = df['Value'].sum()
 
-    return f"R$ {valor}"
+    return f"$ {valor}"
