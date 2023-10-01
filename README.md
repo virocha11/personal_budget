@@ -38,5 +38,19 @@ Developed using only **PYTHON** and the following libraries:
 - IA to integrate list of products desires and financial habits with personal needs
 - Enable exporting data to other financial management tools
 - Integration with coupons apps based on financial habits
-- 
+- Ocr receipts of markets and compare with expenses (https://ocr.space/receiptscanning)
+
+## 📚 References
+- https://dash.plotly.com/
+- https://dash-bootstrap-components.opensource.faculty.ai/docs/components/alert/
+- pandas.pydata.org
+- https://www.w3schools.com/python/pandas/default.asp
+- https://books.google.pt/books?hl=pt-BR&lr=&id=b_gqEAAAQBAJ&oi=fnd&pg=PP1&dq=dash+plotly&ots=Vn3MfpDF7Z&sig=Tm8cpV1dLaqR751gCB5aCtcN1Pg&redir_esc=y#v=onepage&q=dash%20plotly&f=false
+- https://www.irjmets.com/uploadedfiles/paper/issue_6_june_2022/26148/final/fin_irjmets1655438238.pdf
+- https://dadosaocubo.com/storytelling-com-dash-e-plotly/
+- https://books.google.pt/books?id=Oj5FDwAAQBAJ&printsec=frontcover&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false
+- https://www.kaggle.com/code/joaoavf/introducao-a-analise-de-dados-python-e-pandas
+
+- https://www.youtube.com/watch?v=dSCJ7DImGdA&ab_channel=NeuralNine
+
 <p align="center">Copyright © 2023 Vitor Rocha</p>

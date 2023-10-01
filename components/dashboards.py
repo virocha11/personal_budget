@@ -32,7 +32,7 @@ layout = dbc.Col([
                 dbc.Card([
                     html.Legend('Saldo',
                                 style={'font-size': '1.3rem', 'color': 'black'}),
-                    html.H5('R$ 9.300,00', id='value-saldo-dashboards',
+                    html.H5('€ 9.300,00', id='value-saldo-dashboards',
                             style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
@@ -49,7 +49,7 @@ layout = dbc.Col([
                 dbc.Card([
                     html.Legend('Receitas',
                                 style={'font-size': '1.3rem', 'color': 'black'}),
-                    html.H5('R$ 15.000,00',
+                    html.H5('€ 15.000,00',
                             id='value-receita-dashboards', style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
@@ -66,7 +66,7 @@ layout = dbc.Col([
                 dbc.Card([
                     html.Legend('Despesas',
                                 style={'font-size': '1.3rem', 'color': 'black'}),
-                    html.H5('R$ 5.700,00',
+                    html.H5('€ 5.700,00',
                             id='value-despesas-dashboards', style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
@@ -152,7 +152,7 @@ def manage_dropdown_receitas(data):
     valor_receita_total = df_dropdown_receitas['Valor'].sum()
     dropdown_marks = df_dropdown_receitas['Categoria'].unique().tolist()
 
-    return [([{"label": x, "value": x} for x in df_dropdown_receitas['Categoria'].unique()]), dropdown_marks, locale.format_string("R$ %.2f", valor_receita_total, grouping=True)]
+    return [([{"label": x, "value": x} for x in df_dropdown_receitas['Categoria'].unique()]), dropdown_marks, locale.format_string("€ %.2f", valor_receita_total, grouping=True)]
 
 # # Dropdown Despesa e também card de despesa total
 
@@ -166,7 +166,7 @@ def manage_dropdown_despesas(data):
     valor_despesa_total = df_dropdown_despesas['Valor'].sum()
     dropdown_marks = df_dropdown_despesas['Categoria'].unique().tolist()
 
-    return [([{"label": x, "value": x} for x in df_dropdown_despesas['Categoria'].unique()]), dropdown_marks, locale.format_string("R$ %.2f", valor_despesa_total, grouping=True)]
+    return [([{"label": x, "value": x} for x in df_dropdown_despesas['Categoria'].unique()]), dropdown_marks, locale.format_string("€ %.2f", valor_despesa_total, grouping=True)]
 
 # Card de valor total subtraindo as despesas das receitas
 
@@ -181,7 +181,7 @@ def saldo_total(despesas, receitas):
 
     valor_saldo = valor_receitas - valor_despesas
 
-    return locale.format_string("R$ %.2f", valor_saldo, grouping=True)
+    return locale.format_string("€ %.2f", valor_saldo, grouping=True)
 
 
 # Gráfico 1

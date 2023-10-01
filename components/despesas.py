@@ -26,7 +26,7 @@ layout = dbc.Col([
             dbc.Card(
                 dbc.CardBody([
                     html.H4("Despesas"),
-                    html.Legend("R$ -", id="valor_despesa_card",
+                    html.Legend("€ -", id="valor_despesa_card",
                                 style={'font-size': '3rem'}),
                     html.H6("Total de despesas"),
                 ], style={'text-align': 'center', 'padding-top': '30px'}))
@@ -132,7 +132,7 @@ def bar_chart(data):
     graph = px.bar(df_grouped, x='Categoria', y='Valor', title="Despesas Gerais",
                    color='Categoria',  # Adiciona cores
                    # Rótulos dos eixos
-                   labels={'Valor': 'Valor (R$)', 'Categoria': 'Categoria'},
+                   labels={'Valor': 'Valor (€)', 'Categoria': 'Categoria'},
                    )
 
     # Atualiza o layout
@@ -140,9 +140,9 @@ def bar_chart(data):
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         xaxis_title="Categoria",
-        yaxis_title="Valor (R$)",
+        yaxis_title="Valor (€)",
         yaxis=dict(
-            tickprefix="R$ ",  # Prefixo para o eixo Y
+            tickprefix="€ ",  # Prefixo para o eixo Y
             title_font=dict(
                 size=16,
                 color='black',
@@ -170,4 +170,4 @@ def display_desp(data):
     df = pd.DataFrame(data)
     valor = df['Valor'].sum()
 
-    return f"R$ {valor}"
+    return f"€ {valor:.2f}"
