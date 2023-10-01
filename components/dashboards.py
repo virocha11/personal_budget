@@ -50,7 +50,7 @@ layout = dbc.Col([
                     html.Legend('Revenue',
                                 style={'font-size': '1.3rem', 'color': 'black'}),
                     html.H5('$ 15.000,00',
-                            id='value-receita-dashboards', style={'font-size': '1.2rem'})
+                            id='value-revenue-dashboards', style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
                 dbc.Card(
@@ -60,14 +60,14 @@ layout = dbc.Col([
                 )
             ])
         ], width=4),
-        # Despesa
+        # Expense
         dbc.Col([
             dbc.CardGroup([
                 dbc.Card([
                     html.Legend('Expenses',
                                 style={'font-size': '1.3rem', 'color': 'black'}),
                     html.H5('$ 5.700,00',
-                            id='value-despesas-dashboards', style={'font-size': '1.2rem'})
+                            id='value-expenses-dashboards', style={'font-size': '1.2rem'})
                 ], style={'padding-left': '20px', 'padding-top': '10px', 'margin-right': 0}),
 
                 dbc.Card(
@@ -88,7 +88,7 @@ layout = dbc.Col([
                 html.Label("Categorys das revenues"),
                 html.Div(
                     dcc.Dropdown(
-                        id="dropdown-receita",
+                        id="dropdown-revenue",
                         clearable=False,
                         style={"width": "100%"},
                         persistence=True,
@@ -99,7 +99,7 @@ layout = dbc.Col([
                 html.Label("Categorys das expenses",
                            style={"margin-top": "10px"}),
                 dcc.Dropdown(
-                    id="dropdown-despesa",
+                    id="dropdown-expense",
                     clearable=False,
                     style={"width": "100%"},
                     persistence=True,
@@ -120,7 +120,7 @@ layout = dbc.Col([
 
         dbc.Col(dbc.Card(dcc.Graph(id="graph1",
                                    config={
-                                       "displayModeBar": True,
+                                       "displayModeBar": False,
                                        "displaylogo": False,
                                        "modeBarButtonsToRemove": ["pan2d", "lasso2d"]
                                    }), style={
@@ -141,44 +141,44 @@ layout = dbc.Col([
 
 
 # =========  Callbacks  =========== #
-# # Dropdown Receita e também card de receita total
-@app.callback([Output("dropdown-receita", "options"),
-               Output("dropdown-receita", "value"),
-               Output("value-receita-dashboards", "children")],
-              Input("store-receitas", "data"))
-def manage_dropdown_receitas(data):
-    df_dropdown_receitas = pd.DataFrame(data)
-    valor_receita_total = df_dropdown_receitas['Value'].sum()
-    dropdown_marks = df_dropdown_receitas['Category'].unique().tolist()
+# # Dropdown Receita e também card de revenue total
+@app.callback([Output("dropdown-revenue", "options"),
+               Output("dropdown-revenue", "value"),
+               Output("value-revenue-dashboards", "children")],
+              Input("store-revenues", "data"))
+def manage_dropdown_revenues(data):
+    df_dropdown_revenues = pd.DataFrame(data)
+    valor_revenue_total = df_dropdown_revenues['Value'].sum()
+    dropdown_marks = df_dropdown_revenues['Category'].unique().tolist()
 
-    return [([{"label": x, "value": x} for x in df_dropdown_receitas['Category'].unique()]), dropdown_marks, locale.format_string("$ %.2f", valor_receita_total, grouping=True)]
+    return [([{"label": x, "value": x} for x in df_dropdown_revenues['Category'].unique()]), dropdown_marks, locale.format_string("$ %.2f", valor_revenue_total, grouping=True)]
 
-# # Dropdown Despesa e também card de despesa total
+# # Dropdown Expense e também card de expense total
 
 
-@app.callback([Output("dropdown-despesa", "options"),
-               Output("dropdown-despesa", "value"),
-               Output("value-despesas-dashboards", "children")],
-              Input("store-despesas", "data"))
-def manage_dropdown_despesas(data):
-    df_dropdown_despesas = pd.DataFrame(data)
-    valor_despesa_total = df_dropdown_despesas['Value'].sum()
-    dropdown_marks = df_dropdown_despesas['Category'].unique().tolist()
+@app.callback([Output("dropdown-expense", "options"),
+               Output("dropdown-expense", "value"),
+               Output("value-expenses-dashboards", "children")],
+              Input("store-expenses", "data"))
+def manage_dropdown_expenses(data):
+    df_dropdown_expenses = pd.DataFrame(data)
+    valor_expense_total = df_dropdown_expenses['Value'].sum()
+    dropdown_marks = df_dropdown_expenses['Category'].unique().tolist()
 
-    return [([{"label": x, "value": x} for x in df_dropdown_despesas['Category'].unique()]), dropdown_marks, locale.format_string("$ %.2f", valor_despesa_total, grouping=True)]
+    return [([{"label": x, "value": x} for x in df_dropdown_expenses['Category'].unique()]), dropdown_marks, locale.format_string("$ %.2f", valor_expense_total, grouping=True)]
 
-# Card de valor total subtraindo as despesas das receitas
+# Card de valor total subtraindo as expenses das revenues
 
 
 @app.callback(
     Output("value-saldo-dashboards", "children"),
-    [Input("store-despesas", "data"),
-     Input("store-receitas", "data")])
-def saldo_total(despesas, receitas):
-    valor_despesas = pd.DataFrame(despesas)['Value'].sum()
-    valor_receitas = pd.DataFrame(receitas)['Value'].sum()
+    [Input("store-expenses", "data"),
+     Input("store-revenues", "data")])
+def saldo_total(expenses, revenues):
+    valor_expenses = pd.DataFrame(expenses)['Value'].sum()
+    valor_revenues = pd.DataFrame(revenues)['Value'].sum()
 
-    valor_saldo = valor_receitas - valor_despesas
+    valor_saldo = valor_revenues - valor_expenses
 
     return locale.format_string("$ %.2f", valor_saldo, grouping=True)
 
@@ -186,27 +186,27 @@ def saldo_total(despesas, receitas):
 # Gráfico 1
 @app.callback(
     Output('graph1', 'figure'),
-    [Input('store-despesas', 'data'),
-     Input('store-receitas', 'data'),
-     Input("dropdown-despesa", "value"),
-     Input("dropdown-receita", "value"),
+    [Input('store-expenses', 'data'),
+     Input('store-revenues', 'data'),
+     Input("dropdown-expense", "value"),
+     Input("dropdown-revenue", "value"),
      Input('date-picker-config', 'start_date'),
      Input('date-picker-config', 'end_date')])
-def atualiza_grafico1(data_despesa, data_receita, despesa, receita, start_date, end_date):
+def atualiza_grafico1(data_expense, data_revenue, expense, revenue, start_date, end_date):
     
     ## calculate cash flow and acumulated in df_acum
-    df_ds = pd.DataFrame(data_despesa).sort_values(by="Date")
-    # verifica quais categorias estão marcadas no dropdown-despesas
-    # df_ds = df_ds[df_ds['Category'].isin(despesa)]
+    df_ds = pd.DataFrame(data_expense).sort_values(by="Date")
+    # verifica quais categories estão marcadas no dropdown-expenses
+    # df_ds = df_ds[df_ds['Category'].isin(expense)]
     df_ds = df_ds.groupby("Date").sum(numeric_only=True)
-    df_rc = pd.DataFrame(data_receita).sort_values(by="Date")
-    # verifica quais categorias estão marcadas no dropdown-receitas
-    # df_rc = df_rc[df_rc['Category'].isin(receita)]
+    df_rc = pd.DataFrame(data_revenue).sort_values(by="Date")
+    # verifica quais categories estão marcadas no dropdown-revenues
+    # df_rc = df_rc[df_rc['Category'].isin(revenue)]
     df_rc = df_rc.groupby("Date").sum(numeric_only=True)
 
     df_acum = pd.merge(df_rc[['Value']], df_ds[['Value']], on="Date", how="outer", suffixes=(
-        '_receitas', '_despesas')).fillna(0).sort_values(by="Date")
-    df_acum["Saldo"] = df_acum["Value_receitas"] - df_acum["Value_despesas"]
+        '_revenues', '_expenses')).fillna(0).sort_values(by="Date")
+    df_acum["Saldo"] = df_acum["Value_revenues"] - df_acum["Value_expenses"]
     df_acum["Acumulado"] = df_acum["Saldo"].cumsum()
 
     date_filter = (df_acum.index > start_date) & (df_acum.index <= end_date)
@@ -244,31 +244,31 @@ def atualiza_grafico1(data_despesa, data_receita, despesa, receita, start_date, 
 
     return fig
 
-# # Gráfico 2 Barras das receitas e despesas por data
+# # Gráfico 2 Barras das revenues e expenses por data
 
 
 @app.callback(
     Output('graph2', 'figure'),
-    [Input('store-receitas', 'data'),
-     Input('store-despesas', 'data'),
-     Input('dropdown-receita', 'value'),
-     Input('dropdown-despesa', 'value'),
+    [Input('store-revenues', 'data'),
+     Input('store-expenses', 'data'),
+     Input('dropdown-revenue', 'value'),
+     Input('dropdown-expense', 'value'),
      Input('date-picker-config', 'start_date'),
      Input('date-picker-config', 'end_date')]
 )
-def atualiza_grafico2(data_receita, data_despesa, receita, despesa, start_date, end_date):
-    df_ds = pd.DataFrame(data_despesa)
-    # verifica quais categorias estão marcadas no dropdown-despesas
-    df_ds = df_ds[df_ds['Category'].isin(despesa)]
+def atualiza_grafico2(data_revenue, data_expense, revenue, expense, start_date, end_date):
+    df_ds = pd.DataFrame(data_expense)
+    # verifica quais categories estão marcadas no dropdown-expenses
+    df_ds = df_ds[df_ds['Category'].isin(expense)]
     df_ds = df_ds.groupby("Date", as_index=False).sum(numeric_only=True)
-    df_rc = pd.DataFrame(data_receita)
-    # verifica quais categorias estão marcadas no dropdown-receitas
-    df_rc = df_rc[df_rc['Category'].isin(receita)]
+    df_rc = pd.DataFrame(data_revenue)
+    # verifica quais categories estão marcadas no dropdown-revenues
+    df_rc = df_rc[df_rc['Category'].isin(revenue)]
     df_rc = df_rc.groupby("Date", as_index=False).sum(numeric_only=True)
     df_rc['Type'] = 'Expenses'
     df_ds['Type'] = 'Revenue'
 
-    # transforma o dataframa de receitas e despesas em uma tabela única unidos verticalmente
+    # transforma o dataframa de revenues e expenses em uma tabela única unidos verticalmente
     df_final = pd.concat([df_ds, df_rc], ignore_index=True)
 
     date_filter = (df_final['Date'] > start_date) & (
@@ -290,14 +290,14 @@ def atualiza_grafico2(data_receita, data_despesa, receita, despesa, start_date, 
 
 @app.callback(
     Output('graph3', "figure"),
-    [Input('store-receitas', 'data'),
-     Input('dropdown-receita', 'value'),
+    [Input('store-revenues', 'data'),
+     Input('dropdown-revenue', 'value'),
      Input('date-picker-config', 'start_date'),
      Input('date-picker-config', 'end_date')]
 )
-def atualiza_grafico_pie_receita(data_receita, receita, start_date, end_date):
-    df = pd.DataFrame(data_receita)
-    df = df[df['Category'].isin(receita)]
+def atualiza_grafico_pie_revenue(data_revenue, revenue, start_date, end_date):
+    df = pd.DataFrame(data_revenue)
+    df = df[df['Category'].isin(revenue)]
 
     mask = (df['Date'] > start_date) & (df['Date'] <= end_date)
     df = df.loc[mask]
@@ -318,14 +318,14 @@ def atualiza_grafico_pie_receita(data_receita, receita, start_date, end_date):
 
 @app.callback(
     Output('graph4', "figure"),
-    [Input('store-despesas', 'data'),
-     Input('dropdown-despesa', 'value'),
+    [Input('store-expenses', 'data'),
+     Input('dropdown-expense', 'value'),
      Input('date-picker-config', 'start_date'),
      Input('date-picker-config', 'end_date')]
 )
-def atualiza_grafico_pie_despesa(data_despesa, despesa,  start_date, end_date):
-    df = pd.DataFrame(data_despesa)
-    df = df[df['Category'].isin(despesa)]
+def atualiza_grafico_pie_expense(data_expense, expense,  start_date, end_date):
+    df = pd.DataFrame(data_expense)
+    df = df[df['Category'].isin(expense)]
 
     mask = (df['Date'] > start_date) & (df['Date'] <= end_date)
     df = df.loc[mask]

@@ -13,22 +13,22 @@ from app import app
 layout = dbc.Col([
     dbc.Row([
         html.Legend("Revenues Table"),
-        html.Div(id="tabela-receitas"),
+        html.Div(id="tabela-revenues"),
     ]),
 
     dbc.Row([
         dbc.Col([
             dcc.Graph(
-                id='bar-graph-receitas', style={"margin-right": "20px"}, config={'displayModeBar': False}),
+                id='bar-graph-revenues', style={"margin-right": "20px"}, config={'displayModeBar': False}),
         ], width=9),
 
         dbc.Col([
             dbc.Card(
                 dbc.CardBody([
                     html.H4("Total Revenue"),
-                    html.Legend("$ -", id="valor_receita_card",
+                    html.Legend("$ -", id="valor_revenue_card",
                                 style={'font-size': '3rem'}),
-                    html.H6("Total de receitas"),
+                    html.H6("Total de revenues"),
                 ], style={'text-align': 'center', 'padding-top': '30px'}))
         ], width=3),
     ], style={'align-items': 'center'}),
@@ -40,8 +40,8 @@ layout = dbc.Col([
 
 
 @app.callback(
-    Output('tabela-receitas', 'children'),
-    Input('store-receitas', 'data')
+    Output('tabela-revenues', 'children'),
+    Input('store-revenues', 'data')
 )
 def imprimir_tabela(data):
     df = pd.DataFrame(data)
@@ -62,7 +62,7 @@ def imprimir_tabela(data):
     df = df[cols]
 
     tabela = dash_table.DataTable(
-        id='datatable-receita-interactivity',
+        id='datatable-revenue-interactivity',
         columns=[
             {"name": i, "id": i, "deletable": False,
                 "selectable": False, "hideable": True}
@@ -84,7 +84,7 @@ def imprimir_tabela(data):
         selected_rows=[],
         page_action="native",
         page_current=0,
-        page_size=10,
+        page_size=5,
         style_table={'overflowX': 'auto'},  # Scroll horizontal
         style_header={
             'backgroundColor': 'rgb(230, 230, 230)',
@@ -114,7 +114,6 @@ def imprimir_tabela(data):
             'overflow': 'hidden',
             'textOverflow': 'ellipsis',
         },
-        filter_options={"placeholder_text": "Filtrar..."},
     ),
 
     return tabela
@@ -123,8 +122,8 @@ def imprimir_tabela(data):
 
 
 @app.callback(
-    Output('bar-graph-receitas', 'figure'),
-    [Input('store-receitas', 'data')]
+    Output('bar-graph-revenues', 'figure'),
+    [Input('store-revenues', 'data')]
 )
 def bar_chart(data):
     df = pd.DataFrame(data)
@@ -163,8 +162,8 @@ def bar_chart(data):
 
 
 @app.callback(
-    Output('valor_receita_card', 'children'),
-    Input('store-receitas', 'data')
+    Output('valor_revenue_card', 'children'),
+    Input('store-revenues', 'data')
 )
 def display_desp(data):
     df = pd.DataFrame(data)

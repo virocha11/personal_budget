@@ -13,22 +13,22 @@ from app import app
 layout = dbc.Col([
     dbc.Row([
         html.Legend("Expenses Table"),
-        html.Div(id="tabela-despesas"),
+        html.Div(id="tabela-expenses"),
     ]),
 
     dbc.Row([
         dbc.Col([
             dcc.Graph(
-                id='bar-graph-despesas', style={"margin-right": "20px"}, config={'displayModeBar': False}),
+                id='bar-graph-expenses', style={"margin-right": "20px"}, config={'displayModeBar': False}),
         ], width=9),
 
         dbc.Col([
             dbc.Card(
                 dbc.CardBody([
                     html.H4("Total Expense"),
-                    html.Legend("$ -", id="valor_despesa_card",
+                    html.Legend("$ -", id="valor_expense_card",
                                 style={'font-size': '3rem'}),
-                    html.H6("Total de despesas"),
+                    html.H6("Total de expenses"),
                 ], style={'text-align': 'center', 'padding-top': '30px'}))
         ], width=3),
     ], style={'align-items': 'center'}),
@@ -40,8 +40,8 @@ layout = dbc.Col([
 
 
 @app.callback(
-    Output('tabela-despesas', 'children'),
-    Input('store-despesas', 'data')
+    Output('tabela-expenses', 'children'),
+    Input('store-expenses', 'data')
 )
 def imprimir_tabela(data):
     df = pd.DataFrame(data)
@@ -62,7 +62,7 @@ def imprimir_tabela(data):
     df = df[cols]
 
     tabela = dash_table.DataTable(
-        id='datatable-despesa-interactivity',
+        id='datatable-expense-interactivity',
         columns=[
             {"name": i, "id": i, "deletable": False,
                 "selectable": False, "hideable": True}
@@ -123,8 +123,8 @@ def imprimir_tabela(data):
 
 
 @app.callback(
-    Output('bar-graph-despesas', 'figure'),
-    [Input('store-despesas', 'data')]
+    Output('bar-graph-expenses', 'figure'),
+    [Input('store-expenses', 'data')]
 )
 def bar_chart(data):
     df = pd.DataFrame(data)
@@ -163,8 +163,8 @@ def bar_chart(data):
 
 
 @app.callback(
-    Output('valor_despesa_card', 'children'),
-    Input('store-despesas', 'data')
+    Output('valor_expense_card', 'children'),
+    Input('store-expenses', 'data')
 )
 def display_desp(data):
     df = pd.DataFrame(data)

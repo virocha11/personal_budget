@@ -14,19 +14,19 @@ import io
 # ========= Layout ========= #
 layout = dbc.Col([
     html.Div([
-        html.H1("Budget", className="display-5 text-primary fw-bolder mt-3"),
+        html.H1("Personal Budget", className="display-5 text-primary fw-bolder mt-3"),
         html.P("By Vitor Rocha", className="text-muted fs-6"),
         html.Hr(className="my-3")
     ], style={"text-align": "center"}),
 
-    # seção de lançamento de receita e despesa----------------------------------
+    # seção de lançamento de revenue e expense----------------------------------
     dbc.Row([
         dbc.Col([
-            dbc.Button(color='success', id='new-receita',
+            dbc.Button(color='success', id='new-revenue',
                        children=['+ Revenue'])
         ], width=6),
         dbc.Col([
-            dbc.Button(color='danger', id='new-despesa',
+            dbc.Button(color='danger', id='new-expense',
                        children=['- Expense'])
         ], width=6)
     ], style={'text-align': 'center'}),
@@ -40,7 +40,7 @@ layout = dbc.Col([
 
     dbc.Modal(
         [
-            dbc.ModalHeader("Importar CSV"),
+            dbc.ModalHeader("Import CSV Statement"),
             dbc.ModalBody(
                 dcc.Upload(
                     id='upload-data',
@@ -49,32 +49,32 @@ layout = dbc.Col([
                 )
             ),
             dbc.ModalFooter(
-                dbc.Button("Fechar", id="close-button", className="ml-auto")
+                dbc.Button("Close", id="close-button", className="ml-auto")
             ),
         ],
         id="import-modal",
     ),
-    ### Modal receita ###
+    ### Modal revenue ###
     dbc.Modal([
-        dbc.ModalHeader(dbc.ModalTitle('Adicionar Receita')),
+        dbc.ModalHeader(dbc.ModalTitle('Add Receita')),
         dbc.ModalBody([
             dbc.Row([
                     dbc.Col([
-                        dbc.Label('Descrição: '),
+                        dbc.Label('Description: '),
                         dbc.Input(
-                            placeholder="Ex.: dividendos da bolsa, herança...", id="txt-receita"),
+                            placeholder="Ex.: Stock Exchange Dividends, Inheritance...", id="txt-revenue"),
                     ], width=6),
                     dbc.Col([
-                        dbc.Label("Valor: "),
+                        dbc.Label("Value: "),
                         dbc.Input(placeholder="Ex.: $100.00",
-                                  id='valor_receita', value="")
+                                  id='value_revenue', value="")
                     ], width=6)
                     ]),
 
             dbc.Row([
                 dbc.Col([
                     dbc.Label("Data: "),
-                    dcc.DatePickerSingle(id='date-receitas',
+                    dcc.DatePickerSingle(id='date-revenues',
                                          min_date_allowed=date(
                                              2020, 1, 1),
                                          max_date_allowed=date(
@@ -90,16 +90,16 @@ layout = dbc.Col([
                         options=[{"label": "Foi recebida", "value": 1},
                                  {"label": "Receita Recorrente", "value": 2}],
                         value=[1],
-                        id="switches-input-receita",
+                        id="switches-input-revenue",
                         switch=True),
                 ], width=4),
 
                 dbc.Col([
-                    html.Label("Categoria da receita"),
-                    dbc.Select(id="select_receita",
+                    html.Label("Categoria da revenue"),
+                    dbc.Select(id="select_revenue",
                                options=[{"label": i, "value": i}
-                                        for i in cat_receita],
-                               value=cat_receita[0])
+                                        for i in cat_revenue],
+                               value=cat_revenue[0])
                 ], width=4)
             ], style={"margin-top": "25px"}),
 
@@ -108,25 +108,25 @@ layout = dbc.Col([
                     dbc.AccordionItem(children=[
                         dbc.Row([
                             dbc.Col([
-                                    html.Legend("Adicionar categoria", style={
+                                    html.Legend("Add category", style={
                                                 'color': 'green'}),
                                     dbc.Input(
-                                        type="text", placeholder="Nova categoria...", id="input-add-receita", value=""),
+                                        type="text", placeholder="Nova category...", id="input-add-revenue", value=""),
                                     html.Br(),
                                     dbc.Button(
-                                        "Adicionar", className="btn btn-success", id="add-category-receita", style={"margin-top": "20px"}),
+                                        "Add", className="btn btn-success", id="add-category-revenue", style={"margin-top": "20px"}),
                                     html.Br(),
                                     html.Div(
-                                        id="category-div-add-receita", style={}),
+                                        id="category-div-add-revenue", style={}),
                                     ], width=6, style={'padding-right': '20px'}),
 
                             dbc.Col([
-                                    html.Legend("Excluir categorias", style={
+                                    html.Legend("Excluir categories", style={
                                                 'color': 'red'}),
                                     dbc.Checklist(
-                                        id="checklist-selected-style-receita",
+                                        id="checklist-selected-style-revenue",
                                         options=[{"label": i, "value": i}
-                                                 for i in cat_receita],
+                                                 for i in cat_revenue],
                                         value=[],
                                         label_checked_style={
                                             "color": "red"},
@@ -134,22 +134,22 @@ layout = dbc.Col([
                                                              "borderColor": "#ea6258"},
                                     ),
                                     dbc.Button(
-                                        "Remover", color="warning", id="remove-category-receita", style={"margin-top": "20px"}),
+                                        "Delete", color="warning", id="remove-category-revenue", style={"margin-top": "20px"}),
                                     ], width=6),
 
                         ])
-                    ], title="Adicionar/Remover Categorias")
+                    ], title="Add/Delete Categories")
 
-                ], flush=True, start_collapsed=True, id='accordion-receita'),
+                ], flush=True, start_collapsed=True, id='accordion-revenue'),
 
-                html.Div(id="id_teste_receita", style={
+                html.Div(id="id_teste_revenue", style={
                     "padding-top": "20px"}),
 
                 dbc.ModalFooter([
                     dbc.Button(
-                        "Adicionar Receita", id="salvar_receita", color="success"),
+                        "Add Receita", id="salvar_revenue", color="success"),
                     dbc.Popover(dbc.PopoverBody(
-                        "Receita Salva"), target="salvar_receita", placement="left", trigger="click"),
+                        "Receita Salva"), target="salvar_revenue", placement="left", trigger="click"),
                 ])
 
             ], style={"margin-top": "25px"})
@@ -158,34 +158,34 @@ layout = dbc.Col([
 
     ],
         style={"background-color": "rgba(17, 140, 79, 0.05)"},
-        id='modal-new-receita',
+        id='modal-new-revenue',
         size="lg",
         is_open=False,
         centered=True,
         backdrop=True),
 
-    ### Modal despesa ###
+    ### Modal expense ###
     dbc.Modal([
-        dbc.ModalHeader(dbc.ModalTitle('Adicionar despesa')),
+        dbc.ModalHeader(dbc.ModalTitle('Add expense')),
         dbc.ModalBody([
 
             dbc.Row([
                 dbc.Col([
-                    dbc.Label("Descrição: "),
+                    dbc.Label("Description: "),
                     dbc.Input(
-                        placeholder="Ex.: Conta de luz, Compra de sapatos...", id="txt-despesa"),
+                        placeholder="Ex.: Conta de luz, Compra de sapatos...", id="txt-expense"),
                 ], width=6),
                 dbc.Col([
-                    dbc.Label("Valor: "),
+                    dbc.Label("Value: "),
                     dbc.Input(placeholder="Ex.: $100.00",
-                              id="valor_despesa", value="")
+                              id="value_expense", value="")
                 ], width=6)
             ]),
 
             dbc.Row([
                 dbc.Col([
                     dbc.Label("Data: "),
-                    dcc.DatePickerSingle(id='date-despesas',
+                    dcc.DatePickerSingle(id='date-expenses',
                                          min_date_allowed=date(2020, 1, 1),
                                          max_date_allowed=date(2030, 12, 31),
                                          date=datetime.today(),
@@ -199,16 +199,16 @@ layout = dbc.Col([
                         options=[{'label': 'Foi recebida', 'value': 1},
                                  {'label': 'Receita Recorrente', 'value': 2}],
                         value=[1],
-                        id="switches-input-despesa",
+                        id="switches-input-expense",
                         switch=True),
                 ], width=4),
 
                 dbc.Col([
-                    html.Label("Categoria da despesa"),
-                    dbc.Select(id="select_despesa",
+                    html.Label("Categoria da expense"),
+                    dbc.Select(id="select_expense",
                                options=[{"label": i, "value": i}
-                                        for i in cat_despesa],
-                               value=cat_despesa[0])
+                                        for i in cat_expense],
+                               value=cat_expense[0])
                 ], width=4),
             ], style={"margin-top": "25px"}),
 
@@ -217,25 +217,25 @@ layout = dbc.Col([
                     dbc.AccordionItem(children=[
                         dbc.Row([
                             dbc.Col([
-                                html.Legend("Adicionar categoria", style={
+                                html.Legend("Add category", style={
                                     'color': 'green'}),
                                 dbc.Input(
-                                    type="text", placeholder="Nova categoria...", id="input-add-despesa", value=""),
+                                    type="text", placeholder="Nova category...", id="input-add-expense", value=""),
                                 html.Br(),
-                                dbc.Button("Adicionar", className="btn btn-success",
-                                           id="add-category-despesa", style={"margin-top": "20px"}),
+                                dbc.Button("Add", className="btn btn-success",
+                                           id="add-category-expense", style={"margin-top": "20px"}),
                                 html.Br(),
                                 html.Div(
-                                    id="category-div-add-despesa", style={}),
+                                    id="category-div-add-expense", style={}),
                             ], width=6, style={'padding-right': '20px'}),
 
                             dbc.Col([
-                                html.Legend("Excluir categorias", style={
+                                html.Legend("Delete categories", style={
                                     'color': 'red'}),
                                 dbc.Checklist(
-                                    id="checklist-selected-style-despesa",
+                                    id="checklist-selected-style-expense",
                                     options=[{"label": i, "value": i}
-                                             for i in cat_despesa],
+                                             for i in cat_expense],
                                     value=[],
                                     label_checked_style={
                                         "color": "red"},
@@ -243,24 +243,24 @@ layout = dbc.Col([
                                                          "borderColor": "#ea6258"},
                                 ),
                                 dbc.Button(
-                                    "Remover", color="warning", id="remove-category-despesa", style={"margin-top": "20px"}),
+                                    "Delete", color="warning", id="remove-category-expense", style={"margin-top": "20px"}),
                             ], width=6)
                         ]),
-                    ], title="Adicionar/Remover Categorias",
+                    ], title="Add/Delete Categories",
                     ),
-                ], flush=True, start_collapsed=True, id='accordion-despesa'),
+                ], flush=True, start_collapsed=True, id='accordion-expense'),
 
                 dbc.ModalFooter([
-                    dbc.Button("Adicionar despesa", color="danger",
-                               id="salvar_despesa", value="despesa"),
+                    dbc.Button("Add expense", color="danger",
+                               id="salvar_expense", value="expense"),
                     dbc.Popover(dbc.PopoverBody(
-                        "Despesa Salva"), target="salvar_despesa", placement="left", trigger="click"),
+                        "Despesa Salva"), target="salvar_expense", placement="left", trigger="click"),
                 ]
                 )
             ], style={"margin-top": "25px"}),
 
         ])
-    ], id='modal-new-despesa',
+    ], id='modal-new-expense',
         size="lg",
         is_open=False,
         centered=True,
@@ -274,13 +274,13 @@ layout = dbc.Col([
         dbc.NavItem(dbc.NavLink(
             "Dashboard", href="/dashboards", active="exact", id="dashboard-link")),
         dbc.NavItem([
-            dbc.NavLink("Statements", id="extratos-toggle", active="exact")], id="extratos-link"),
+            dbc.NavLink("Statements", id="statements-toggle", active="exact")], id="statements-link"),
         dbc.Collapse([
             dbc.NavLink("Expenses Analysis",
-                        href="/analisar-despesas", active="exact", style={"marginLeft": "20px", "fontSize": "0.9em"}, id="despesas-link"),
+                        href="/analysis-expenses", active="exact", style={"marginLeft": "20px", "fontSize": "0.9em"}, id="expenses-link"),
             dbc.NavLink("Revenue Analysis",
-                        href="/analisar-receitas", active="exact", style={"marginLeft": "20px", "fontSize": "0.9em"}, id="receitas-link"),
-        ], id="extratos-collapse", is_open=False),
+                        href="/analysis-revenues", active="exact", style={"marginLeft": "20px", "fontSize": "0.9em"}, id="revenues-link"),
+        ], id="statements-collapse", is_open=False),
     ], vertical=True, id='nav-buttons', style={'margin-bottom': '50px'})
 
 ], id='sidebar_inteira')
@@ -288,12 +288,12 @@ layout = dbc.Col([
 
 # =========  Callbacks  =========== #
 
-# # Toggle extratos menu collapse com o mouse hover
+# # Toggle statements menu collapse com o mouse hover
 @app.callback(
-    Output("extratos-collapse", "is_open"),
-    [Input("extratos-toggle", "n_clicks"),
+    Output("statements-collapse", "is_open"),
+    [Input("statements-toggle", "n_clicks"),
      Input('url', 'pathname')],  # Nova entrada
-    [State("extratos-collapse", "is_open")],
+    [State("statements-collapse", "is_open")],
 )
 def toggle_collapse(n, pathname, is_open):
     ctx = dash.callback_context
@@ -302,10 +302,10 @@ def toggle_collapse(n, pathname, is_open):
     else:
         trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    if trigger_id == "extratos-toggle":
+    if trigger_id == "statements-toggle":
         return not is_open
     elif trigger_id == 'url':
-        if pathname == "/analisar-despesas" or pathname == "/analisar-receitas":
+        if pathname == "/analysis-expenses" or pathname == "/analysis-revenues":
             return True
         elif pathname == "/dashboards":
             return False
@@ -316,28 +316,28 @@ def toggle_collapse(n, pathname, is_open):
 
 
 @app.callback(
-    [Output("extratos-toggle", "className"),
+    [Output("statements-toggle", "className"),
      Output("dashboard-link", "className"),
-     Output("despesas-link", "className"),
-     Output("receitas-link", "className")],
+     Output("expenses-link", "className"),
+     Output("revenues-link", "className")],
     [Input('url', 'pathname')]
 )
 def update_class(pathname):
-    extratos_class = ""
+    statements_class = ""
     dashboard_class = ""
-    despesas_class = ""
-    receitas_class = ""
+    expenses_class = ""
+    revenues_class = ""
 
     if pathname == "/dashboards" or pathname == "/":
         dashboard_class = "active-singlelink"
-    elif pathname == "/analisar-despesas":
-        extratos_class = "active-grouplink"
-        despesas_class = "active-sublink"
-    elif pathname == "/analisar-receitas":
-        extratos_class = "active-grouplink"
-        receitas_class = "active-sublink"
+    elif pathname == "/analysis-expenses":
+        statements_class = "active-grouplink"
+        expenses_class = "active-sublink"
+    elif pathname == "/analysis-revenues":
+        statements_class = "active-grouplink"
+        revenues_class = "active-sublink"
 
-    return extratos_class, dashboard_class, despesas_class, receitas_class
+    return statements_class, dashboard_class, expenses_class, revenues_class
 
 # # Pop-up importar csv
 
@@ -365,27 +365,27 @@ def upload_file(contents, filename):
         df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
         print(df.head())
 
-# Pop-up receita
+# Pop-up revenue
 
 
 @ app.callback(
-    Output('modal-new-receita', 'is_open'),
-    Input('new-receita', 'n_clicks'),
-    State('modal-new-receita', 'is_open')
+    Output('modal-new-revenue', 'is_open'),
+    Input('new-revenue', 'n_clicks'),
+    State('modal-new-revenue', 'is_open')
 )
-def toggle_modal_receita(n1, is_open):
+def toggle_modal_revenue(n1, is_open):
     if n1:
         return not is_open
 
-# Pop-up despesa
+# Pop-up expense
 
 
 @ app.callback(
-    Output('modal-new-despesa', 'is_open'),
-    Input('new-despesa', 'n_clicks'),
-    State('modal-new-despesa', 'is_open')
+    Output('modal-new-expense', 'is_open'),
+    Input('new-expense', 'n_clicks'),
+    State('modal-new-expense', 'is_open')
 )
-def toggle_modal_despesa(n1, is_open):
+def toggle_modal_expense(n1, is_open):
     if n1:
         return not is_open
 
@@ -400,104 +400,104 @@ def toggle_modal_despesa(n1, is_open):
 #     if n1:
 #         return not is_open
 
-# # Enviar nova receita
+# # Enviar nova revenue
 @app.callback(
-    Output('store-receitas', 'data'),
+    Output('store-revenues', 'data'),
 
-    Input('salvar_receita', 'n_clicks'),
+    Input('salvar_revenue', 'n_clicks'),
 
     [
-        State("txt-receita", "value"),
-        State("valor_receita", "value"),
-        State("date-receitas", "date"),
-        State("switches-input-receita", "value"),
-        State("select_receita", "value"),
-        State('store-receitas', 'data')
+        State("txt-revenue", "value"),
+        State("value_revenue", "value"),
+        State("date-revenues", "date"),
+        State("switches-input-revenue", "value"),
+        State("select_revenue", "value"),
+        State('store-revenues', 'data')
     ]
 )
-def salve_form_receita(n, descricao, valor, date, switches, categoria, dict_receitas):
+def salve_form_revenue(n, descricao, value, date, switches, category, dict_revenues):
 
-    if n and not (valor == "" or valor == None):
-        valor = round(float(valor), 2)
+    if n and not (value == "" or value == None):
+        value = round(float(value), 2)
         date = pd.to_datetime(date).date()
-        categoria = categoria[0] if type(categoria) == list else categoria
+        category = category[0] if type(category) == list else category
 
         recebido = 1 if 1 in switches else 0
         fixo = 1 if 2 in switches else 0
 
-        df_receitas.loc[df_receitas.shape[0]] = [
-            valor, recebido, fixo, date, categoria, descricao]
-        df_receitas.to_csv(os.path.join(
-            path_data_files, data_files['receitas']))
+        df_revenues.loc[df_revenues.shape[0]] = [
+            value, recebido, fixo, date, category, descricao]
+        df_revenues.to_csv(os.path.join(
+            path_data_files, data_files['revenues']))
 
-    data_return = df_receitas.to_dict()
+    data_return = df_revenues.to_dict()
     return data_return
 
-# # Enviar nova despesa
+# # Enviar nova expense
 
 
 @app.callback(
-    Output('store-despesas', 'data'),
+    Output('store-expenses', 'data'),
 
-    Input('salvar_despesa', 'n_clicks'),
+    Input('salvar_expense', 'n_clicks'),
 
     [
-        State("txt-despesa", "value"),
-        State("valor_despesa", "value"),
-        State("date-despesas", "date"),
-        State("switches-input-despesa", "value"),
-        State("select_despesa", "value"),
-        State('store-despesas', 'data')
+        State("txt-expense", "value"),
+        State("value_expense", "value"),
+        State("date-expenses", "date"),
+        State("switches-input-expense", "value"),
+        State("select_expense", "value"),
+        State('store-expenses', 'data')
     ]
 )
-def salve_form_despesa(n, descricao, valor, date, switches, categoria, dict_despesas):
+def salve_form_expense(n, descricao, value, date, switches, category, dict_expenses):
     # import pdb
     # pdb.set_trace()
 
-    if n and not (valor == "" or valor == None):
-        valor = round(float(valor), 2)
+    if n and not (value == "" or value == None):
+        value = round(float(value), 2)
         date = pd.to_datetime(date).date()
-        categoria = categoria[0] if type(categoria) == list else categoria
+        category = category[0] if type(category) == list else category
 
         recebido = 1 if 1 in switches else 0
         fixo = 1 if 2 in switches else 0
 
-        df_despesas.loc[df_despesas.shape[0]] = [
-            valor, recebido, fixo, date, categoria, descricao]
-        df_despesas.to_csv(os.path.join(
-            path_data_files, data_files['despesas']))
+        df_expenses.loc[df_expenses.shape[0]] = [
+            value, recebido, fixo, date, category, descricao]
+        df_expenses.to_csv(os.path.join(
+            path_data_files, data_files['expenses']))
 
-    data_return = df_despesas.to_dict()
+    data_return = df_expenses.to_dict()
     return data_return
 
 
-# Add/Remove categoria receita
+# Add/Remove category revenue
 @app.callback(
-    [Output("select_receita", "options"),
-     Output('checklist-selected-style-receita', 'options'),
-     Output('checklist-selected-style-receita', 'value'),
-     Output('stored-cat-receitas', 'data')
+    [Output("select_revenue", "options"),
+     Output('checklist-selected-style-revenue', 'options'),
+     Output('checklist-selected-style-revenue', 'value'),
+     Output('stored-cat-revenues', 'data')
      ],
 
     # # caso queira adicionar o style e o texto de confirmação no modal faça:
-    # [Output("category-div-add-receita", "children"),
-    #  Output("category-div-add-receita", "style"),
-    #  Output("select_receita", "options"),
-    #  Output('checklist-selected-style-receita', 'options'),
-    #  Output('checklist-selected-style-receita', 'value'),
-    #  Output('stored-cat-receitas', 'data')],
+    # [Output("category-div-add-revenue", "children"),
+    #  Output("category-div-add-revenue", "style"),
+    #  Output("select_revenue", "options"),
+    #  Output('checklist-selected-style-revenue', 'options'),
+    #  Output('checklist-selected-style-revenue', 'value'),
+    #  Output('stored-cat-revenues', 'data')],
     # # não esqueça de adicionar na função essa mudança e também no return
 
 
-    [Input("add-category-receita", "n_clicks"),
-     Input("remove-category-receita", 'n_clicks')],
+    [Input("add-category-revenue", "n_clicks"),
+     Input("remove-category-revenue", 'n_clicks')],
 
-    [State("input-add-receita", "value"),
-     State('checklist-selected-style-receita', 'value'),
-     State('stored-cat-receitas', 'data')]
+    [State("input-add-revenue", "value"),
+     State('checklist-selected-style-revenue', 'value'),
+     State('stored-cat-revenues', 'data')]
 )
-def add_category_receita(n, n2, txt, check_delete, data):
-    cat_receita = list(data["Categoria"].values())
+def add_category_revenue(n, n2, txt, check_delete, data):
+    cat_revenue = list(data["Categoria"].values())
 
     # txt1 = []
     # style1 = {}
@@ -505,56 +505,56 @@ def add_category_receita(n, n2, txt, check_delete, data):
     # #  Adiciona uma mensagem caso o campo texto esteja vazio
     # if n:
     #     if txt == "" or txt == None:
-    #         txt1 = "O campo de texto não pode estar vazio para o registro de uma nova categoria."
+    #         txt1 = "O campo de texto não pode estar vazio para o registro de uma nova category."
     #         style1 = {'color': 'red'}
 
     if n and not (txt == "" or txt == None):
-        cat_receita = cat_receita + \
-            [txt] if txt not in cat_receita else cat_receita
+        cat_revenue = cat_revenue + \
+            [txt] if txt not in cat_revenue else cat_revenue
         # # Adiciona o estilo e a mensagem de confirmação
-        # txt1 = f'A categoria {txt} foi adicionada com sucesso!'
+        # txt1 = f'A category {txt} foi adicionada com sucesso!'
         # style1 = {'color': 'green'}
 
     if n2:
         if len(check_delete) > 0:
-            cat_receita = [i for i in cat_receita if i not in check_delete]
+            cat_revenue = [i for i in cat_revenue if i not in check_delete]
 
-    opt_receita = [{"label": i, "value": i} for i in cat_receita]
-    df_cat_receita = pd.DataFrame(cat_receita, columns=['Categoria'])
-    df_cat_receita.to_csv(os.path.join(
-        path_data_files, data_files['categorias_receitas']))
-    data_return = df_cat_receita.to_dict()
+    opt_revenue = [{"label": i, "value": i} for i in cat_revenue]
+    df_cat_revenue = pd.DataFrame(cat_revenue, columns=['Categoria'])
+    df_cat_revenue.to_csv(os.path.join(
+        path_data_files, data_files['categories_revenues']))
+    data_return = df_cat_revenue.to_dict()
 
-    return [opt_receita, opt_receita, [], data_return]
+    return [opt_revenue, opt_revenue, [], data_return]
     # se quiser adicionar o style1 e txt1 dentro do modal faça:
-    # return [txt1, style1, opt_receita, opt_receita, [], data_return]
+    # return [txt1, style1, opt_revenue, opt_revenue, [], data_return]
 
 
-# Add/Remove categoria despesa
+# Add/Remove category expense
 @app.callback(
     [
-        Output("select_despesa", "options"),
-        Output('checklist-selected-style-despesa', 'options'),
-        Output('checklist-selected-style-despesa', 'value'),
-        Output('stored-cat-despesas', 'data')],
+        Output("select_expense", "options"),
+        Output('checklist-selected-style-expense', 'options'),
+        Output('checklist-selected-style-expense', 'value'),
+        Output('stored-cat-expenses', 'data')],
 
     # caso queira adicionar o style e o texto de confirmação no modal faça:
-    # [Output("category-div-add-despesa", "children"),
-    #  Output("category-div-add-despesa", "style"),
-    #  Output("select_despesa", "options"),
-    #  Output('checklist-selected-style-despesa', 'options'),
-    #  Output('checklist-selected-style-despesa', 'value'),
-    #  Output('stored-cat-despesas', 'data')],
+    # [Output("category-div-add-expense", "children"),
+    #  Output("category-div-add-expense", "style"),
+    #  Output("select_expense", "options"),
+    #  Output('checklist-selected-style-expense', 'options'),
+    #  Output('checklist-selected-style-expense', 'value'),
+    #  Output('stored-cat-expenses', 'data')],
 
-    [Input("add-category-despesa", "n_clicks"),
-     Input("remove-category-despesa", 'n_clicks')],
+    [Input("add-category-expense", "n_clicks"),
+     Input("remove-category-expense", 'n_clicks')],
 
-    [State("input-add-despesa", "value"),
-     State('checklist-selected-style-despesa', 'value'),
-     State('stored-cat-despesas', 'data')]
+    [State("input-add-expense", "value"),
+     State('checklist-selected-style-expense', 'value'),
+     State('stored-cat-expenses', 'data')]
 )
-def add_category_despesa(n, n2, txt, check_delete, data):
-    cat_despesa = list(data["Categoria"].values())
+def add_category_expense(n, n2, txt, check_delete, data):
+    cat_expense = list(data["Categoria"].values())
 
     # # Cria as variáveis para texto de confirmação e estilo do texto
     # txt1 = []
@@ -563,26 +563,26 @@ def add_category_despesa(n, n2, txt, check_delete, data):
     # #  Adiciona uma mensagem caso o campo texto esteja vazio
     # if n:
     #     if txt == "" or txt == None:
-    #         txt1 = "O campo de texto não pode estar vazio para o registro de uma nova categoria."
+    #         txt1 = "O campo de texto não pode estar vazio para o registro de uma nova category."
     #         style1 = {'color': 'red'}
 
     if n and not (txt == "" or txt == None):
-        cat_despesa = cat_despesa + \
-            [txt] if txt not in cat_despesa else cat_despesa
+        cat_expense = cat_expense + \
+            [txt] if txt not in cat_expense else cat_expense
         # # Adiciona o estilo e a mensagem de confirmação
-        # txt1 = f'A categoria {txt} foi adicionada com sucesso!'
+        # txt1 = f'A category {txt} foi adicionada com sucesso!'
         # style1 = {'color': 'green'}
 
     if n2:
         if len(check_delete) > 0:
-            cat_despesa = [i for i in cat_despesa if i not in check_delete]
+            cat_expense = [i for i in cat_expense if i not in check_delete]
 
-    opt_despesa = [{"label": i, "value": i} for i in cat_despesa]
-    df_cat_despesa = pd.DataFrame(cat_despesa, columns=['Categoria'])
-    df_cat_despesa.to_csv(os.path.join(
-        path_data_files, data_files['categorias_despesas']))
-    data_return = df_cat_despesa.to_dict()
+    opt_expense = [{"label": i, "value": i} for i in cat_expense]
+    df_cat_expense = pd.DataFrame(cat_expense, columns=['Categoria'])
+    df_cat_expense.to_csv(os.path.join(
+        path_data_files, data_files['categories_expenses']))
+    data_return = df_cat_expense.to_dict()
 
-    return [opt_despesa, opt_despesa, [], data_return]
+    return [opt_expense, opt_expense, [], data_return]
     # # se quiser adicionar o style1 e txt1 dentro do modal faça:
-    # return [txt1, style1, opt_despesa, opt_despesa, [], data_return]
+    # return [txt1, style1, opt_expense, opt_expense, [], data_return]

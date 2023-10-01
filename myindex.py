@@ -8,27 +8,27 @@ import plotly.express as px
 
 from app import *
 
-from components import despesas, sidebar, dashboards, receitas
+from components import expenses, revenues, sidebar, dashboards
 
 from globals import *
 
 
 # DataFrames and Dcc.Store
-df_receitas = pd.read_csv(os.path.join(
-    path_data_files, data_files['receitas']), index_col=0, parse_dates=True)
-df_receitas_aux = df_receitas.to_dict()
+df_revenues = pd.read_csv(os.path.join(
+    path_data_files, data_files['revenues']), index_col=0, parse_dates=True)
+df_revenues_aux = df_revenues.to_dict()
 
-df_despesas = pd.read_csv(os.path.join(
-    path_data_files, data_files['despesas']), index_col=0, parse_dates=True)
-df_despesas_aux = df_despesas.to_dict()
+df_expenses = pd.read_csv(os.path.join(
+    path_data_files, data_files['expenses']), index_col=0, parse_dates=True)
+df_expenses_aux = df_expenses.to_dict()
 
-list_receitas = pd.read_csv(os.path.join(
-    path_data_files, data_files['categorias_receitas']), index_col=0)
-list_receitas_aux = list_receitas.to_dict()
+list_revenues = pd.read_csv(os.path.join(
+    path_data_files, data_files['categories_revenues']), index_col=0)
+list_revenues_aux = list_revenues.to_dict()
 
-list_despesas = pd.read_csv(os.path.join(
-    path_data_files, data_files['categorias_despesas']), index_col=0)
-list_despesas_aux = list_despesas.to_dict()
+list_expenses = pd.read_csv(os.path.join(
+    path_data_files, data_files['categories_expenses']), index_col=0)
+list_expenses_aux = list_expenses.to_dict()
 
 
 # =========  Layout  =========== #
@@ -37,10 +37,10 @@ content = html.Div(id="page-content")
 
 app.layout = dbc.Container(children=[
     # criação de caixinhas de memória para manipular os dados do dataframe
-    dcc.Store(id='store-receitas', data=df_receitas_aux),
-    dcc.Store(id="store-despesas", data=df_despesas_aux),
-    dcc.Store(id='stored-cat-receitas', data=list_receitas_aux),
-    dcc.Store(id='stored-cat-despesas', data=list_despesas_aux),
+    dcc.Store(id='store-revenues', data=df_revenues_aux),
+    dcc.Store(id="store-expenses", data=df_expenses_aux),
+    dcc.Store(id='stored-cat-revenues', data=list_revenues_aux),
+    dcc.Store(id='stored-cat-expenses', data=list_expenses_aux),
 
     dbc.Row([
         dbc.Col([
@@ -58,11 +58,11 @@ app.layout = dbc.Container(children=[
 def render_page(pathname):
     if pathname == '/' or pathname == '/dashboards':
         return dashboards.layout
-    if pathname == '/analisar-despesas':
-        return despesas.layout
-    if pathname == '/analisar-receitas':
-        return receitas.layout
+    if pathname == '/analisar-expenses':
+        return expenses.layout
+    if pathname == '/analisar-revenues':
+        return revenues.layout
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8090)
