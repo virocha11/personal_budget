@@ -13,7 +13,7 @@ import base64 as b64
 import io
 
 ## Services ##
-from assets.scripts.extratos_transform_service import ExtratoTransform
+from utils.extratos_transform_service import ExtratoTransform
 
 
 # ========= Layout ========= #
