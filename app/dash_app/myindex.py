@@ -1,33 +1,32 @@
 # bibliotecas e imports da pasta/bibliotecas
 from dash import html, dcc
-import dash
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 
-from app import *
+from ..app import app
 
-from components import despesas, sidebar, dashboards, receitas
+from .components import despesas, sidebar, dashboards, receitas
 
-from globals import *
+from .data_loader import *
 
 
 # DataFrames and Dcc.Store
 df_receitas = pd.read_csv(os.path.join(
-    path_data_files, data_files['receitas']), index_col=0, parse_dates=True)
+    data_dir, data_files['receitas']), index_col=0, parse_dates=True)
 df_receitas_aux = df_receitas.to_dict()
 
 df_despesas = pd.read_csv(os.path.join(
-    path_data_files, data_files['despesas']), index_col=0, parse_dates=True)
+    data_dir, data_files['despesas']), index_col=0, parse_dates=True)
 df_despesas_aux = df_despesas.to_dict()
 
 list_receitas = pd.read_csv(os.path.join(
-    path_data_files, data_files['categorias_receitas']), index_col=0)
+    data_dir, data_files['categorias_receitas']), index_col=0)
 list_receitas_aux = list_receitas.to_dict()
 
 list_despesas = pd.read_csv(os.path.join(
-    path_data_files, data_files['categorias_despesas']), index_col=0)
+    data_dir, data_files['categorias_despesas']), index_col=0)
 list_despesas_aux = list_despesas.to_dict()
 
 

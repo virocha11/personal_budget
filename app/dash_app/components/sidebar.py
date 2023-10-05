@@ -1,4 +1,5 @@
-from globals import *
+from ..data_loader import *
+from ...app import app
 import pandas as pd
 import numpy as np
 import plotly.express as px
@@ -13,7 +14,7 @@ import base64 as b64
 import io
 
 ## Services ##
-from utils.extratos_transform_service import ExtratoTransform
+from ...utils.extratos_transform_service import StatemantTransform
 
 
 # ========= Layout ========= #
@@ -458,16 +459,16 @@ def combined_callback(contents, n_clicks_receita, n_clicks_despesa, filename, de
 
     if triggered_id == 'upload-data':
         if selected_banco == "Wise":
-            extrato = ExtratoTransform(contents)
+            extrato = StatemantTransform(contents)
             receitas_transformed, despesas_transformed = extrato.transform_wise()
 
             df_receitas_novo = pd.concat([df_receitas, receitas_transformed])
             df_despesas_novo = pd.concat([df_despesas, despesas_transformed])
 
             df_receitas_novo.to_csv(os.path.join(
-                path_data_files, data_files['receitas']))
+                data_dir, data_files['receitas']))
             df_despesas_novo.to_csv(os.path.join(
-                path_data_files, data_files['despesas']))
+                data_dir, data_files['despesas']))
 
         return df_receitas_novo.to_dict(), df_despesas_novo.to_dict()
 
@@ -484,7 +485,7 @@ def combined_callback(contents, n_clicks_receita, n_clicks_despesa, filename, de
             df_receitas.loc[df_receitas.shape[0]] = [
                 valor_receita, recebido, fixo, date_receita, categoria_receita, descricao_receita]
             df_receitas.to_csv(os.path.join(
-                path_data_files, data_files['receitas']))
+                data_dir, data_files['receitas']))
 
             data_return = df_receitas.to_dict()
             return data_return, dash.no_update
@@ -502,7 +503,7 @@ def combined_callback(contents, n_clicks_receita, n_clicks_despesa, filename, de
             df_despesas.loc[df_despesas.shape[0]] = [
                 valor_despesa, recebido, fixo, date_despesa, categoria_despesa, descricao_despesa]
             df_despesas.to_csv(os.path.join(
-                path_data_files, data_files['despesas']))
+                data_dir, data_files['despesas']))
 
             data_return = df_despesas.to_dict()
 
@@ -510,8 +511,7 @@ def combined_callback(contents, n_clicks_receita, n_clicks_despesa, filename, de
 
     return dash.no_update, dash.no_update
 
-# Add/Remove categoria receita
-
+## Add/Remove categoria receita
 
 @app.callback(
     [Output("select_receita", "options"),
@@ -563,7 +563,7 @@ def add_category_receita(n, n2, txt, check_delete, data):
     opt_receita = [{"label": i, "value": i} for i in cat_receita]
     df_cat_receita = pd.DataFrame(cat_receita, columns=['Categoria'])
     df_cat_receita.to_csv(os.path.join(
-        path_data_files, data_files['categorias_receitas']))
+        data_dir, data_files['categorias_receitas']))
     data_return = df_cat_receita.to_dict()
 
     return [opt_receita, opt_receita, [], data_return]
@@ -621,7 +621,7 @@ def add_category_despesa(n, n2, txt, check_delete, data):
     opt_despesa = [{"label": i, "value": i} for i in cat_despesa]
     df_cat_despesa = pd.DataFrame(cat_despesa, columns=['Categoria'])
     df_cat_despesa.to_csv(os.path.join(
-        path_data_files, data_files['categorias_despesas']))
+        data_dir, data_files['categorias_despesas']))
     data_return = df_cat_despesa.to_dict()
 
     return [opt_despesa, opt_despesa, [], data_return]

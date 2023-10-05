@@ -2,7 +2,8 @@ import base64
 import pandas as pd
 import io
 
-class ExtratoTransform:
+
+class StatemantTransform:
     def __init__(self, contents):
         self.contents = contents
 
@@ -13,13 +14,13 @@ class ExtratoTransform:
 
     def transform_wise(self):
         df_file_uploaded = self._decode_contents()
-            
+
         df_file_uploaded = df_file_uploaded.dropna(axis=1, how='all')
         df_file_uploaded = df_file_uploaded[df_file_uploaded['Situação'] != 'Cancelado']
-        
+
         receitas_file_uploaded = df_file_uploaded[df_file_uploaded['Direção'] == 'IN']
         despesas_file_uploaded = df_file_uploaded[df_file_uploaded['Direção'] == 'OUT']
-        
+
         receitas_transformed = pd.DataFrame({
             'Valor': receitas_file_uploaded['Valor de destino (tarifas inclusas)'],
             'Efetuado': 1,
@@ -28,14 +29,14 @@ class ExtratoTransform:
             'Categoria': 'Outros',
             'Descrição': receitas_file_uploaded['Nome de origem']
         })
-        
+
         despesas_transformed = pd.DataFrame({
             'Valor': despesas_file_uploaded['Valor de origem (tarifas inclusas)'],
-            'Efetuado': 1, 
+            'Efetuado': 1,
             'Fixo': 0,
             'Data': despesas_file_uploaded['Concluída em'],
             'Categoria': 'Outros',
             'Descrição': despesas_file_uploaded['Nome do beneficiário']
-        })        
-        
+        })
+
         return receitas_transformed, despesas_transformed
