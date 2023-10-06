@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output
 ## create generic modal to add transactions expenses and revenues
 def modal_add_transaction(id, title, categories):
     modal = dbc.Modal([
-        dbc.ModalHeader(dbc.ModalTitle(title)),
+        dbc.ModalHeader(dbc.ModalTitle(f"Adicionar {title}")),
         dbc.ModalBody([
             dbc.Row([
                 dbc.Col([
@@ -89,7 +89,10 @@ def modal_add_transaction(id, title, categories):
                 
                 dbc.ModalFooter([
                     dbc.Button(
-                        f"Adicionar {title}", id=f"salvar_{id}", color="success"),
+                        f"Adicionar {title}",
+                        id=f"salvar_{id}",
+                        color="success" if id == "receita" else "danger"
+                    ),
                     dbc.Popover(dbc.PopoverBody(
                         f"{title} Salva"), target=f"salvar_{id}", placement="left", trigger="click"),
                 ])
