@@ -43,7 +43,7 @@ layout = dbc.Col([
     Output('tabela-receitas', 'children'),
     Input('store-receitas', 'data')
 )
-def imprimir_tabela(data):
+def create_table(data):
     df = pd.DataFrame(data)
     df['Data'] = pd.to_datetime(df['Data']).dt.date
 

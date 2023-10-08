@@ -42,11 +42,11 @@ def callback_manege_category_modal(id):
         return [opt, opt, [], data_return]
     return add_category
 
-def callback_open_modal(id):
+def callback_open_modal(id_button, id_modal):
     @app.callback(
-        Output(f"modal-new-{id}", "is_open"),
-        [Input(f"new-{id}", "n_clicks")],
-        [State(f"modal-new-{id}", "is_open")],
+        Output(id_modal, "is_open"),
+        [Input(id_button, "n_clicks")],
+        [State(id_modal, "is_open")],
     )
     def toggle_modal(n1, is_open):
         if n1:
