@@ -231,7 +231,6 @@ def atualiza_grafico1(data_despesa, data_receita, despesa, receita, start_date, 
         ),
         xaxis=dict(
             tickmode='auto',
-            nticks=len(df_acum.index),
             tickformat='%b %Y'
         )
     )
