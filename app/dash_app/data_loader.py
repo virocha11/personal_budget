@@ -22,6 +22,7 @@ if (data_files['despesas'] in os.listdir(data_dir)) and (data_files['receitas'] 
 
 else:
     data_structure = {'Valor': [],
+                      'Moeda': [],
                       'Efetuado': [],
                       'Fixo': [],
                       'Data': [],
