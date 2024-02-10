@@ -30,6 +30,7 @@ Developed using only **PYTHON** and the following libraries:
 ## 🚀 Future Plans
 
 - Add authentication and user login
+- Implement SupaBase Backend
 - Implement integration with bank APIs to automatically collect data
 - List of desires for products
 - Integration with apps to compare prices of products
