@@ -6,8 +6,6 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-import calendar
-from globals import *
 from app import app
 import locale
 
@@ -142,7 +140,7 @@ layout = dbc.Col([
 
 
 # =========  Callbacks  =========== #
-# # Dropdown Receita e também card de receita total
+## Dropdown Receita e também card de receita total
 @app.callback([Output("dropdown-receita", "options"),
                Output("dropdown-receita", "value"),
                Output("value-receita-dashboards", "children")],
@@ -154,8 +152,7 @@ def manage_dropdown_receitas(data):
 
     return [([{"label": x, "value": x} for x in df_dropdown_receitas['Categoria'].unique()]), dropdown_marks, locale.format_string("€ %.2f", valor_receita_total, grouping=True)]
 
-# # Dropdown Despesa e também card de despesa total
-
+## Dropdown Despesa e também card de despesa total
 
 @app.callback([Output("dropdown-despesa", "options"),
                Output("dropdown-despesa", "value"),
@@ -168,8 +165,7 @@ def manage_dropdown_despesas(data):
 
     return [([{"label": x, "value": x} for x in df_dropdown_despesas['Categoria'].unique()]), dropdown_marks, locale.format_string("€ %.2f", valor_despesa_total, grouping=True)]
 
-# Card de valor total subtraindo as despesas das receitas
-
+## Card de valor total subtraindo as despesas das receitas
 
 @app.callback(
     Output("value-saldo-dashboards", "children"),
@@ -235,16 +231,13 @@ def atualiza_grafico1(data_despesa, data_receita, despesa, receita, start_date, 
         ),
         xaxis=dict(
             tickmode='auto',
-            nticks=len(df_acum.index),
             tickformat='%b %Y'
         )
     )
 
     return fig
 
-# # Gráfico 2 Barras das receitas e despesas por data
-
-
+## Gráfico 2 Barras das receitas e despesas por data
 @app.callback(
     Output('graph2', 'figure'),
     [Input('store-receitas', 'data'),
@@ -275,9 +268,28 @@ def atualiza_grafico2(data_receita, data_despesa, receita, despesa, start_date, 
 
     fig = px.bar(df_final, x="Data", y="Valor",
                  color='Tipo', barmode="group",
+                 labels={'Valor': 'Valor (€)', 'Data': 'Data'},
                  )
 
-    fig.update_layout(margin=graph_margin, height=300)
+    fig.update_layout(
+        margin=graph_margin, 
+        height=300,
+        yaxis=dict(
+            tickprefix="€ ",  # Prefixo para o eixo Y
+            title_font=dict(
+                size=16,
+                color='black',
+            ),
+        ),
+        xaxis=dict(
+            title_font=dict(
+                size=16,
+                color='black',
+            ),
+            ## dd/mm/yyyy
+            tickformat='%m/%Y'
+        )
+        )
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)')
 

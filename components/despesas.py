@@ -43,7 +43,7 @@ layout = dbc.Col([
     Output('tabela-despesas', 'children'),
     Input('store-despesas', 'data')
 )
-def imprimir_tabela(data):
+def create_table(data):
     df = pd.DataFrame(data)
     df['Data'] = pd.to_datetime(df['Data']).dt.date
 
@@ -56,7 +56,7 @@ def imprimir_tabela(data):
     df = df.fillna('-')
 
     df.sort_values(by='Data', ascending=False)
-    # coloca a coluna descrição na primeira posição
+
     cols = df.columns.tolist()
     cols = cols[-1:] + cols[:-1]
     df = df[cols]
@@ -133,6 +133,7 @@ def bar_chart(data):
                    color='Categoria',  # Adiciona cores
                    # Rótulos dos eixos
                    labels={'Valor': 'Valor (€)', 'Categoria': 'Categoria'},
+                   width=1000,
                    )
 
     # Atualiza o layout
