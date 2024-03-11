@@ -262,3 +262,9 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,flask
+docs/database.drawio
+docs/database.png
+docs/tree_oportunity.drawio
+docs/tree_oportunity.png
+docs/usecase.drawio
+docs/usecase.png
