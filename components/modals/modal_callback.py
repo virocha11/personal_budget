@@ -1,7 +1,6 @@
 from dash.dependencies import Input, Output, State
 from dash import callback_context, dash
 from app import app
-from data_loader import data_dir, data_files
 import pandas as pd
 import os
 
@@ -37,8 +36,10 @@ def callback_manege_category_modal(id):
 
         opt = [{"label": i, "value": i} for i in categories]
         df_categories = pd.DataFrame(categories, columns=['Categoria'])
-        df_categories.to_csv(os.path.join(
-            data_dir, data_files[f'categorias_{id}s']))
+        # vivian: dar um jeito de mudar isso para atualizar categorias lá no supabase
+        # df_categories.to_csv(os.path.join(data_dir, data_files[f'categorias_{id}s']))
+        # Assuming you have a connection to Supabase, you can update the categories in Supabase like this:
+        # supabase.table('categories').upsert(df_categories.to_dict('records'), upsert=True, returning='minimal')
         data_return = df_categories.to_dict()
 
         return [opt, opt, [], data_return]
@@ -132,11 +133,11 @@ def calback_add_transactions(
 
             df_revenues_novo = pd.concat([df_revenues, revenues_transformed])
             df_expenses_novo = pd.concat([df_expenses, expenses_transformed])
-
-            df_revenues_novo.to_csv(os.path.join(
-                data_dir, data_files['receitas']))
-            df_expenses_novo.to_csv(os.path.join(
-                data_dir, data_files['despesas']))
+            # vivian: aqui tbm precisa atualizar lá no supabase esses receitas/despesas novos aí 
+            # df_revenues_novo.to_csv(os.path.join(
+            #     data_dir, data_files['receitas']))
+            # df_expenses_novo.to_csv(os.path.join(
+            #     data_dir, data_files['despesas']))
             return df_revenues_novo.to_dict(), df_expenses_novo.to_dict()
         
         elif triggered_id == id_save_revenue_button and save_revenue_button_n_clicks is not None:
@@ -148,11 +149,11 @@ def calback_add_transactions(
 
                 recebido = 1 if 1 in switches_revenue_value else 0
                 fixo = 1 if 2 in switches_revenue_value else 0
-
-                df_revenues.loc[df_revenues.shape[0]] = [
-                    revenue_value, recebido, fixo, date_revenue_value, select_category_revenue_value, description_revenue_value]
-                df_revenues.to_csv(os.path.join(
-                    data_dir, data_files['receitas']))
+                # vivian: possivelmente mesma coisa
+                # df_revenues.loc[df_revenues.shape[0]] = [
+                #     revenue_value, recebido, fixo, date_revenue_value, select_category_revenue_value, description_revenue_value]
+                # df_revenues.to_csv(os.path.join(
+                #     data_dir, data_files['receitas']))
 
                 data_return = df_revenues.to_dict()
                 return data_return, dash.no_update
@@ -165,11 +166,11 @@ def calback_add_transactions(
 
                 recebido = 1 if 1 in switches_expense_value else 0
                 fixo = 1 if 2 in switches_expense_value else 0
-
-                df_expenses.loc[df_expenses.shape[0]] = [
-                    expense_value, recebido, fixo, date_expense_value, select_category_expense_value, description_expense_value]
-                df_expenses.to_csv(os.path.join(
-                    data_dir, data_files['despesas']))
+                # vivian: aqui tambeeemmmm
+                # df_expenses.loc[df_expenses.shape[0]] = [
+                #     expense_value, recebido, fixo, date_expense_value, select_category_expense_value, description_expense_value]
+                # df_expenses.to_csv(os.path.join(
+                #     data_dir, data_files['despesas']))
 
                 data_return = df_expenses.to_dict()
                 return dash.no_update, data_return
