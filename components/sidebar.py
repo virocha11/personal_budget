@@ -1,4 +1,3 @@
-from data_loader import *
 import pandas as pd
 from app import app
 import dash_bootstrap_components as dbc
@@ -13,6 +12,16 @@ from .modals.modal_add_transaction import modal_add_transaction
 from .modals.modal_callback import calback_add_transactions, callback_manege_category_modal, callback_open_modal
 from .modals.modal_import_statement import modal_import_statement, callback_manage_div_upload_data, callback_statement_store
 
+
+# ========  Data  ========= #
+# Categorias
+from data.tables import Access_category
+
+_category = Access_category()
+df_category = _category.retrieve('category')
+list_category: dict = df_category.values.tolist()
+list_category = sorted(list_category, key=lambda x: x[0])
+
 # ========= Layout ========= #
 layout = dbc.Col([
     html.Div([
@@ -22,7 +31,7 @@ layout = dbc.Col([
         html.Hr(className="my-3")
     ], style={"text-align": "center"}),
 
-    # seção de lançamento de receita e despesa----------------------------------
+    # seção de lançamento de receita e despesa ----------------------------------
     dbc.Row([
         dbc.Col([
             dbc.Button(color='success', id='new-receita',
@@ -49,10 +58,12 @@ layout = dbc.Col([
     ),
     
     ### Modal receita ###
-    modal_add_transaction('receita', 'Receita', cat_receita),   
+    # cat_receita = {"Salario", "Hinode", "Doação"}
+    modal_add_transaction('receita', 'Receita', list_category),   
     
     ### Modal despesa ###
-    modal_add_transaction('despesa', 'Despesa', cat_despesa),
+    # cat_despesa = {"Alimentacao", "Gasolina"}
+    modal_add_transaction('despesa', 'Despesa', list_category),
 
     # seção de navegação--------------------
     html.Hr(),
@@ -69,8 +80,7 @@ layout = dbc.Col([
                         href="/analisar-receitas", active="exact", style={"marginLeft": "20px", "fontSize": "0.9em"}, id="receitas-link"),
         ], id="extratos-collapse", is_open=False),
     ], vertical=True, id='nav-buttons', style={'margin-bottom': '50px'})
-
-], id='sidebar_inteira')
+    ],id='sidebar_inteira')
 
 
 # =========  Callbacks  =========== #
