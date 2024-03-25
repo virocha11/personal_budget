@@ -4,7 +4,7 @@ from dash import html, dcc
 from dash.dependencies import Input, Output   
 
 ## create generic modal to add transactions expenses and revenues
-def modal_add_transaction(id, title, categories):
+def modal_add_transaction(id: str, title: str, categories: dict):
     modal = dbc.Modal([
         dbc.ModalHeader(dbc.ModalTitle(f"Adicionar {title}")),
         dbc.ModalBody([
